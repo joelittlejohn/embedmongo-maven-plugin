@@ -19,6 +19,12 @@
         </license>
     </licenses>
 
+    <scm>
+    	<url>http://github.com/joelittlejohn/embedmongo-maven-plugin/tree/master</url>
+    	<connection>scm:git:git@github.com:joelittlejohn/embedmongo-maven-plugin.git</connection>
+    	<developerConnection>scm:git:git@github.com:joelittlejohn/embedmongo-maven-plugin.git</developerConnection>
+    </scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
