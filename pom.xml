@@ -10,8 +10,15 @@
     <packaging>maven-plugin</packaging>
 
     <name>embedmongo-maven-plugin</name>
+    <description>Maven plugin wrapper for the flapdoodle.de embedded MongoDB API.</description>
     <url>http://github.com/joelittlejohn/embedmongo-maven-plugin</url>
+    <inceptionYear>2012</inceptionYear>
 
+    <issueManagement>
+    	<system>GitHub</system>
+    	<url>https://github.com/joelittlejohn/embedmongo-maven-plugin/issues</url>
+    </issueManagement>
+    
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
