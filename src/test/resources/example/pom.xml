@@ -21,26 +21,27 @@
                 </configuration>
             </plugin>
             <plugin>
-    	        <groupId>com.github.joelittlejohn.embedmongo</groupId>
-	        <artifactId>embedmongo-maven-plugin</artifactId>
-	        <version>0.1.0-SNAPSHOT</version>
+                <groupId>com.github.joelittlejohn.embedmongo</groupId>
+                <artifactId>embedmongo-maven-plugin</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
                 <executions>
-                <execution>
-                    <id>start</id>
-                    <goals>
-                        <goal>start</goal>
-                    </goals>
-                    <configuration>
-                        <port>37701</port>
-                        <version>2.1.1</version>
-                    </configuration>
-                </execution>
-                <execution>
-                    <id>stop</id>
-                    <goals>
-                        <goal>stop</goal>
-                    </goals>
-                </execution>
+                    <execution>
+                        <id>start</id>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <port>37017</port>
+                            <version>2.1.1</version>
+                            <databaseDirectory>/tmp/mongotest</databaseDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
