@@ -15,9 +15,18 @@
  */
 package com.github.joelittlejohn.embedmongo;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.SocketAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -29,7 +38,6 @@ import de.flapdoodle.embedmongo.MongodProcess;
 import de.flapdoodle.embedmongo.config.MongodConfig;
 import de.flapdoodle.embedmongo.distribution.Version;
 import de.flapdoodle.embedmongo.runtime.Network;
-import static java.util.Arrays.*;
 
 /**
  * When invoked, this goal starts an instance of mongo. The required binaries
@@ -69,9 +77,29 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      */
     private File databaseDirectory;
 
+    /**
+     * A proxy hostname to be used when downloading MongoDB distributions.
+     * 
+     * @parameter expression="${embedmongo.proxyHost}"
+     * @since 0.1.1
+     */
+    private String proxyHost;
+
+    /**
+     * A proxy port to be used when downloading MongoDB distributions.
+     * 
+     * @parameter expression="${embedmongo.proxyPort}" default-value="80"
+     * @since 0.1.1
+     */
+    private int proxyPort;
+
     @Override
     @SuppressWarnings("unchecked")
     public void execute() throws MojoExecutionException, MojoFailureException {
+
+        if (this.proxyHost != null && this.proxyHost.length() > 0) {
+            this.addProxySelector();
+        }
 
         MongodExecutable executable;
         try {
@@ -90,6 +118,24 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         }
     }
 
+    private void addProxySelector() {
+        final ProxySelector defaultProxySelector = ProxySelector.getDefault();
+        ProxySelector.setDefault(new ProxySelector() {
+            @Override
+            public List<Proxy> select(URI uri) {
+                if (uri.getHost().equals("fastdl.mongodb.org")) {
+                    return singletonList(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)));
+                } else {
+                    return defaultProxySelector.select(uri);
+                }
+            }
+
+            @Override
+            public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+            }
+        });
+    }
+
     private Version getVersion() throws MojoExecutionException {
         String flapdoodleCompatibleVersionString = this.version.toUpperCase().replaceAll("\\.", "_");
 
@@ -100,7 +146,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         try {
             return Version.valueOf(flapdoodleCompatibleVersionString);
         } catch (IllegalArgumentException e) {
-            throw new MojoExecutionException("Unrecognised MongoDB version: '" + this.version + 
+            throw new MojoExecutionException("Unrecognised MongoDB version: '" + this.version +
                     "', try one of the following: \n" + asList(Version.class.getEnumConstants()) + "\n", e);
         }
 

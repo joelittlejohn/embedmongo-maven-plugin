@@ -23,6 +23,8 @@ Usage
                 <port>37017</port> <!-- optional, default 27017 -->
                 <version>2.0.4</version>  <!-- optional, default 2.1.1 -->
                 <databaseDirectory>/tmp/mongotest</databaseDirectory>  <!-- optional, default is a new dir in java.io.tmpdir -->
+                <proxyHost>myproxy.company.com</proxyHost>  <!-- optional, default is none -->
+                <proxyPort>8080</proxyPort>  <!-- optional, default 80 -->
             </configuration>
         </execution>
         <execution>
@@ -40,3 +42,4 @@ Notes
 
 * If you omit/forget the `stop` goal, any Mongo process spawned by the `start` goal will be stopped when the JVM terminates.
 * If you want to run many Maven builds in parallel using Jenkins, try the [Port Allocator Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Port+Allocator+Plugin) to avoid port conflicts.
+* If you need to use a proxy to download MongoDB then you can either use `-Dhttp.proxyHost` and `-Dhttp.proxyPort` as additional Maven arguments (this will affect the entire build) or instruct the plugin to use a proxy when downloading Mongo by adding the `proxyHost` and `proxyPort` configuration properties.
