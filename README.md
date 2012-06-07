@@ -12,7 +12,7 @@ Usage
 <plugin>
     <groupId>com.any.joelittlejohn.embedmongo</groupId>
     <artifactId>embedmongo-maven-plugin</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <executions>
         <execution>
             <id>start</id>
