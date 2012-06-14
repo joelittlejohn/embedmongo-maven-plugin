@@ -10,7 +10,7 @@ Usage
 
 ```xml
 <plugin>
-    <groupId>com.any.joelittlejohn.embedmongo</groupId>
+    <groupId>com.github.joelittlejohn.embedmongo</groupId>
     <artifactId>embedmongo-maven-plugin</artifactId>
     <version>0.1.1</version>
     <executions>
