@@ -105,7 +105,7 @@
         <dependency>
             <groupId>de.flapdoodle.embedmongo</groupId>
             <artifactId>de.flapdoodle.embedmongo</artifactId>
-            <version>1.15</version>
+            <version>1.16</version>
         </dependency>
     </dependencies>
 
