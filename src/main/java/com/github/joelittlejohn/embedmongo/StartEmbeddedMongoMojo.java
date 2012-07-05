@@ -27,6 +27,7 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -92,6 +93,16 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * @since 0.1.1
      */
     private int proxyPort;
+    
+    /**
+     * Block immediately and wait until MongoDB is explicitly stopped (eg:
+     * {@literal <ctrl-c>}). This option makes this goal similar in spirit to
+     * something like jetty:run, useful for interactive debugging.
+     * 
+     * @parameter expression="${embedmongo.wait}" default-value="false"
+     * @since 0.1.2
+     */
+    private boolean wait;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -110,6 +121,17 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
         try {
             MongodProcess mongod = executable.start();
+
+            if (wait) {
+                while (true) {
+                    try {
+                        TimeUnit.MINUTES.sleep(5);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+            }
+
             addShutdownHook(mongod);
 
             getPluginContext().put(MONGOD_CONTEXT_PROPERTY_NAME, mongod);
