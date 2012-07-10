@@ -12,12 +12,12 @@ Usage
 <plugin>
     <groupId>com.github.joelittlejohn.embedmongo</groupId>
     <artifactId>embedmongo-maven-plugin</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <executions>
         <execution>
             <id>start</id>
             <goals>
-                <goal>start</goal>
+                <goal>start</goal> <!-- use the 'run' goal instead to start mongodb and wait -->
             </goals>
             <configuration>
                 <port>37017</port> <!-- optional, default 27017 -->
