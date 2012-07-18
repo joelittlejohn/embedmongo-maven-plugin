@@ -15,8 +15,8 @@
  */
 package com.github.joelittlejohn.embedmongo;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
+import static java.util.Arrays.*;
+import static java.util.Collections.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,7 +93,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * @since 0.1.1
      */
     private int proxyPort;
-    
+
     /**
      * Block immediately and wait until MongoDB is explicitly stopped (eg:
      * {@literal <ctrl-c>}). This option makes this goal similar in spirit to
@@ -131,8 +131,6 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
                     }
                 }
             }
-
-            addShutdownHook(mongod);
 
             getPluginContext().put(MONGOD_CONTEXT_PROPERTY_NAME, mongod);
         } catch (IOException e) {
@@ -180,22 +178,6 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         } else {
             return null;
         }
-    }
-
-    /**
-     * A final failsafe to shutdown the mongod process at the end of the build,
-     * even if the plugin stop goal is not invoked.
-     * 
-     * @param mongod
-     *            the mongo process started by this plugin
-     */
-    private void addShutdownHook(final MongodProcess mongod) {
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                mongod.stop();
-            }
-        });
     }
 
 }
