@@ -33,10 +33,15 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
+import com.github.joelittlejohn.embedmongo.log.Loggers;
+import com.github.joelittlejohn.embedmongo.log.Loggers.LoggingStyle;
+
 import de.flapdoodle.embedmongo.MongoDBRuntime;
 import de.flapdoodle.embedmongo.MongodExecutable;
 import de.flapdoodle.embedmongo.MongodProcess;
 import de.flapdoodle.embedmongo.config.MongodConfig;
+import de.flapdoodle.embedmongo.config.MongodProcessOutputConfig;
+import de.flapdoodle.embedmongo.config.RuntimeConfig;
 import de.flapdoodle.embedmongo.distribution.Version;
 import de.flapdoodle.embedmongo.runtime.Network;
 
@@ -104,6 +109,12 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      */
     private boolean wait;
 
+    /**
+     * @parameter expression="${embedmongo.logging}" default-value="console"
+     * @since 0.1.3
+     */
+    private String logging;
+
     @Override
     @SuppressWarnings("unchecked")
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -114,7 +125,10 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
         MongodExecutable executable;
         try {
-            executable = MongoDBRuntime.getDefaultInstance().prepare(new MongodConfig(getVersion(), port, Network.localhostIsIPv6(), getDataDirectory()));
+            RuntimeConfig config = new RuntimeConfig();
+            config.setMongodOutputConfig(getOutputConfig());
+
+            executable = MongoDBRuntime.getInstance(config).prepare(new MongodConfig(getVersion(), port, Network.localhostIsIPv6(), getDataDirectory()));
         } catch (UnknownHostException e) {
             throw new MojoExecutionException("Unable to determine if localhost is ipv6", e);
         }
@@ -136,6 +150,23 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to start the mongod", e);
         }
+    }
+
+    private MongodProcessOutputConfig getOutputConfig() throws MojoFailureException {
+
+        LoggingStyle loggingStyle = LoggingStyle.valueOf(logging.toUpperCase());
+
+        switch (loggingStyle) {
+            case CONSOLE:
+                return Loggers.console();
+            case FILE:
+                return Loggers.file();
+            case NONE:
+                return Loggers.none();
+            default:
+                throw new MojoFailureException("Unexpected logging style encountered: \"" + logging + "\" -> " + loggingStyle);
+        }
+
     }
 
     private void addProxySelector() {
