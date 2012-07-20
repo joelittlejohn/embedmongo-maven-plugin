@@ -25,14 +25,15 @@ public class FileOutputStreamProcessor implements IStreamProcessor {
 
     private static OutputStreamWriter stream;
 
-    private synchronized void write(String text) {
+    @Override
+    public synchronized void process(String block) {
         try {
 
             if (stream == null) {
                 stream = new OutputStreamWriter(new FileOutputStream("embedmongo.log"), "utf-8");
             }
 
-            stream.write(text);
+            stream.write(block);
             stream.flush();
 
         } catch (IOException e) {
@@ -41,12 +42,7 @@ public class FileOutputStreamProcessor implements IStreamProcessor {
     }
 
     @Override
-    public void process(String block) {
-        write(block);
-    }
-
-    @Override
     public void onProcessed() {
-        write("\n");
+        process("\n");
     }
 }
