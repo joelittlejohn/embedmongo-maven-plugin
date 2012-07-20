@@ -23,6 +23,7 @@ Usage
                 <port>37017</port> <!-- optional, default 27017 -->
                 <version>2.0.4</version>  <!-- optional, default 2.1.1 -->
                 <databaseDirectory>/tmp/mongotest</databaseDirectory>  <!-- optional, default is a new dir in java.io.tmpdir -->
+                <logging>file</logging> <!-- optional (file|console|none), default console-->
                 <proxyHost>myproxy.company.com</proxyHost>  <!-- optional, default is none -->
                 <proxyPort>8080</proxyPort>  <!-- optional, default 80 -->
             </configuration>
