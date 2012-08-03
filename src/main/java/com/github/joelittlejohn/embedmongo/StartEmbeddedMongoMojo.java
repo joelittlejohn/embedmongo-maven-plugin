@@ -15,7 +15,6 @@
  */
 package com.github.joelittlejohn.embedmongo;
 
-import static java.util.Arrays.*;
 import static java.util.Collections.*;
 
 import java.io.File;
@@ -42,7 +41,10 @@ import de.flapdoodle.embedmongo.MongodProcess;
 import de.flapdoodle.embedmongo.config.MongodConfig;
 import de.flapdoodle.embedmongo.config.MongodProcessOutputConfig;
 import de.flapdoodle.embedmongo.config.RuntimeConfig;
+import de.flapdoodle.embedmongo.distribution.GenericVersion;
+import de.flapdoodle.embedmongo.distribution.IVersion;
 import de.flapdoodle.embedmongo.distribution.Version;
+import de.flapdoodle.embedmongo.exceptions.MongodException;
 import de.flapdoodle.embedmongo.runtime.Network;
 
 /**
@@ -131,6 +133,8 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
             executable = MongoDBRuntime.getInstance(config).prepare(new MongodConfig(getVersion(), port, Network.localhostIsIPv6(), getDataDirectory()));
         } catch (UnknownHostException e) {
             throw new MojoExecutionException("Unable to determine if localhost is ipv6", e);
+        } catch (MongodException e) {
+            throw new MojoExecutionException("Failed to download MongoDB distribution: " + e.withDistribution(), e);
         }
 
         try {
@@ -187,18 +191,18 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         });
     }
 
-    private Version getVersion() throws MojoExecutionException {
-        String flapdoodleCompatibleVersionString = this.version.toUpperCase().replaceAll("\\.", "_");
+    private IVersion getVersion() throws MojoExecutionException {
+        String versionEnumName = this.version.toUpperCase().replaceAll("\\.", "_");
 
         if (this.version.charAt(0) != 'V') {
-            flapdoodleCompatibleVersionString = "V" + flapdoodleCompatibleVersionString;
+            versionEnumName = "V" + versionEnumName;
         }
 
         try {
-            return Version.valueOf(flapdoodleCompatibleVersionString);
+            return Version.valueOf(versionEnumName);
         } catch (IllegalArgumentException e) {
-            throw new MojoExecutionException("Unrecognised MongoDB version: '" + this.version +
-                    "', try one of the following: \n" + asList(Version.class.getEnumConstants()) + "\n", e);
+            getLog().warn("Unrecognised MongoDB version '" + this.version + "', this might be a new version that we don't yet know about. Attemping download anyway...");
+            return new GenericVersion(this.version);
         }
 
     }
