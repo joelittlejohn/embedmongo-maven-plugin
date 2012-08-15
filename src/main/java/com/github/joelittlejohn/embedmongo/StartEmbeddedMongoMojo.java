@@ -35,17 +35,17 @@ import org.apache.maven.plugin.MojoFailureException;
 import com.github.joelittlejohn.embedmongo.log.Loggers;
 import com.github.joelittlejohn.embedmongo.log.Loggers.LoggingStyle;
 
-import de.flapdoodle.embedmongo.MongoDBRuntime;
-import de.flapdoodle.embedmongo.MongodExecutable;
-import de.flapdoodle.embedmongo.MongodProcess;
-import de.flapdoodle.embedmongo.config.MongodConfig;
-import de.flapdoodle.embedmongo.config.MongodProcessOutputConfig;
-import de.flapdoodle.embedmongo.config.RuntimeConfig;
-import de.flapdoodle.embedmongo.distribution.GenericVersion;
-import de.flapdoodle.embedmongo.distribution.IVersion;
-import de.flapdoodle.embedmongo.distribution.Version;
-import de.flapdoodle.embedmongo.exceptions.MongodException;
-import de.flapdoodle.embedmongo.runtime.Network;
+import de.flapdoodle.embed.mongo.MongodExecutable;
+import de.flapdoodle.embed.mongo.MongodProcess;
+import de.flapdoodle.embed.mongo.MongodStarter;
+import de.flapdoodle.embed.mongo.config.MongodConfig;
+import de.flapdoodle.embed.mongo.config.RuntimeConfig;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.config.io.ProcessOutput;
+import de.flapdoodle.embed.process.distribution.GenericVersion;
+import de.flapdoodle.embed.process.distribution.IVersion;
+import de.flapdoodle.embed.process.exceptions.DistributionException;
+import de.flapdoodle.embed.process.runtime.Network;
 
 /**
  * When invoked, this goal starts an instance of mongo. The required binaries
@@ -128,12 +128,12 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         MongodExecutable executable;
         try {
             RuntimeConfig config = new RuntimeConfig();
-            config.setMongodOutputConfig(getOutputConfig());
+            config.setProcessOutput(getOutputConfig());
 
-            executable = MongoDBRuntime.getInstance(config).prepare(new MongodConfig(getVersion(), port, Network.localhostIsIPv6(), getDataDirectory()));
+            executable = MongodStarter.getInstance(config).prepare(new MongodConfig(getVersion(), port, Network.localhostIsIPv6(), getDataDirectory()));
         } catch (UnknownHostException e) {
             throw new MojoExecutionException("Unable to determine if localhost is ipv6", e);
-        } catch (MongodException e) {
+        } catch (DistributionException e) {
             throw new MojoExecutionException("Failed to download MongoDB distribution: " + e.withDistribution(), e);
         }
 
@@ -156,7 +156,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         }
     }
 
-    private MongodProcessOutputConfig getOutputConfig() throws MojoFailureException {
+    private ProcessOutput getOutputConfig() throws MojoFailureException {
 
         LoggingStyle loggingStyle = LoggingStyle.valueOf(logging.toUpperCase());
 

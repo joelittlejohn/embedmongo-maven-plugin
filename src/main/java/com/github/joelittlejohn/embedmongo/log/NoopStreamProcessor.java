@@ -15,7 +15,7 @@
  */
 package com.github.joelittlejohn.embedmongo.log;
 
-import de.flapdoodle.embedmongo.io.IStreamProcessor;
+import de.flapdoodle.embed.process.io.IStreamProcessor;
 
 public class NoopStreamProcessor implements IStreamProcessor {
 

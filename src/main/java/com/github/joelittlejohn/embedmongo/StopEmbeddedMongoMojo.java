@@ -19,7 +19,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import de.flapdoodle.embedmongo.MongodProcess;
+import de.flapdoodle.embed.mongo.MongodProcess;
 
 /**
  * When invoked, this goal stops an instance of mojo that was started by this

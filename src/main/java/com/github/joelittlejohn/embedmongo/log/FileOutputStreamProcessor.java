@@ -19,7 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import de.flapdoodle.embedmongo.io.IStreamProcessor;
+import de.flapdoodle.embed.process.io.IStreamProcessor;
 
 public class FileOutputStreamProcessor implements IStreamProcessor {
 

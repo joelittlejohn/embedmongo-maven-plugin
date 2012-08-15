@@ -15,10 +15,9 @@
  */
 package com.github.joelittlejohn.embedmongo.log;
 
-import static de.flapdoodle.embedmongo.io.Processors.*;
-import de.flapdoodle.embedmongo.config.MongodProcessOutputConfig;
-import de.flapdoodle.embedmongo.io.NamedOutputStreamProcessor;
-import de.flapdoodle.embedmongo.io.Processors;
+import de.flapdoodle.embed.mongo.config.MongodProcessOutputConfig;
+import de.flapdoodle.embed.process.config.io.ProcessOutput;
+import de.flapdoodle.embed.process.io.NamedOutputStreamProcessor;
 
 public class Loggers {
 
@@ -26,24 +25,21 @@ public class Loggers {
         FILE, CONSOLE, NONE
     }
 
-    public static MongodProcessOutputConfig file() {
+    public static ProcessOutput file() {
         FileOutputStreamProcessor file = new FileOutputStreamProcessor();
 
-        return new MongodProcessOutputConfig(
+        return new ProcessOutput(
                 new NamedOutputStreamProcessor("[mongod output]", file),
-                new NamedOutputStreamProcessor("[mongod error]", file), file);
+                new NamedOutputStreamProcessor("[mongod error]", file),
+                new NamedOutputStreamProcessor("[mongod commands]", file));
     }
 
-    public static MongodProcessOutputConfig console() {
-
-        return new MongodProcessOutputConfig(
-                namedConsole("[mongod output]"),
-                namedConsole("[mongod error]"), Processors.console());
+    public static ProcessOutput console() {
+        return MongodProcessOutputConfig.getDefaultInstance();
     }
 
-    public static MongodProcessOutputConfig none() {
-
+    public static ProcessOutput none() {
         NoopStreamProcessor noop = new NoopStreamProcessor();
-        return new MongodProcessOutputConfig(noop, noop, noop);
+        return new ProcessOutput(noop, noop, noop);
     }
 }
