@@ -88,10 +88,10 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     /**
      * An IP address for the MongoDB instance to be bound to during its execution.
      * 
-     * @parameter expression="${embedmongo.bindIP}"
+     * @parameter expression="${embedmongo.bindIp}"
      * @since 0.1.4
      */
-    private String bindIP;
+    private String bindIp;
 
     /**
      * A proxy hostname to be used when downloading MongoDB distributions.
@@ -138,7 +138,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
             RuntimeConfig config = new RuntimeConfig();
             config.setProcessOutput(getOutputConfig());
 
-            executable = MongodStarter.getInstance(config).prepare(new MongodConfig(getVersion(), bindIP, port, Network.localhostIsIPv6(), getDataDirectory()));
+            executable = MongodStarter.getInstance(config).prepare(new MongodConfig(getVersion(), bindIp, port, Network.localhostIsIPv6(), getDataDirectory()));
         } catch (UnknownHostException e) {
             throw new MojoExecutionException("Unable to determine if localhost is ipv6", e);
         } catch (DistributionException e) {
