@@ -12,7 +12,7 @@ Usage
 <plugin>
     <groupId>com.github.joelittlejohn.embedmongo</groupId>
     <artifactId>embedmongo-maven-plugin</artifactId>
-    <version>0.1.3</version>
+    <version>0.1.4</version>
     <executions>
         <execution>
             <id>start</id>
@@ -26,6 +26,7 @@ Usage
                 <logging>file</logging> <!-- optional (file|console|none), default console -->
                 <proxyHost>myproxy.company.com</proxyHost>  <!-- optional, default is none -->
                 <proxyPort>8080</proxyPort>  <!-- optional, default 80 -->
+                <bindIp>127.0.0.1</bindIp> <!-- optional, default is to listen on all interfaces -->
             </configuration>
         </execution>
         <execution>
