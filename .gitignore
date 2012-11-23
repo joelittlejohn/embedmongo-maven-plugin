@@ -1,6 +1,3 @@
-*.class
-*.orig
-
 # Package files #
 *.jar
 *.war
@@ -13,3 +10,10 @@
 
 # Maven derived files
 target
+*.class
+
+# git derived files
+*.orig
+
+# Misc
+*.log
