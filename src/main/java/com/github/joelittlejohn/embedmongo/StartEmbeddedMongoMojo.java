@@ -138,7 +138,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
             RuntimeConfig config = new RuntimeConfig();
             config.setProcessOutput(getOutputConfig());
 
-            executable = MongodStarter.getInstance(config).prepare(new MongodConfig(getVersion(), bindIp, port, Network.localhostIsIPv6(), getDataDirectory()));
+            executable = MongodStarter.getInstance(config).prepare(new MongodConfig(getVersion(), bindIp, port, Network.localhostIsIPv6(), getDataDirectory(), null, 0));
         } catch (UnknownHostException e) {
             throw new MojoExecutionException("Unable to determine if localhost is ipv6", e);
         } catch (DistributionException e) {

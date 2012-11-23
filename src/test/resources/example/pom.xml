@@ -23,7 +23,7 @@
             <plugin>
                 <groupId>com.github.joelittlejohn.embedmongo</groupId>
                 <artifactId>embedmongo-maven-plugin</artifactId>
-                <version>0.1.4-SNAPSHOT</version>
+                <version>0.1.5-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>start</id>
@@ -32,7 +32,6 @@
                         </goals>
                         <configuration>
                             <port>37017</port>
-                            <version>2.0.8</version>
                             <databaseDirectory>/tmp/mongotest</databaseDirectory>
                             <logging>file</logging>
                         </configuration>
