@@ -72,7 +72,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     /**
      * The version of MongoDB to run e.g. 2.1.1, 1.6 v1.8.2, V2_0_4,
      * 
-     * @parameter expression="${embedmongo.version}" default-value="V2_0_6"
+     * @parameter expression="${embedmongo.version}" default-value="2.2.1"
      * @since 0.1.0
      */
     private String version;
