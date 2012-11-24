@@ -10,7 +10,7 @@
   
     <groupId>com.github.joelittlejohn.embedmongo</groupId>
     <artifactId>embedmongo-maven-plugin</artifactId>
-    <version>0.1.5-SNAPSHOT</version>
+    <version>0.1.5</version>
 
     <packaging>maven-plugin</packaging>
 
@@ -35,7 +35,7 @@
         <url>http://github.com/joelittlejohn/embedmongo-maven-plugin/tree/master</url>
         <connection>scm:git:git@github.com:joelittlejohn/embedmongo-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:joelittlejohn/embedmongo-maven-plugin.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>0.1.5</tag>
     </scm>
 
     <properties>
