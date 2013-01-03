@@ -17,7 +17,7 @@ Usage
         <execution>
             <id>start</id>
             <goals>
-                <goal>start</goal> <!-- use the 'run' goal instead to start mongodb and wait -->
+                <goal>start</goal>
             </goals>
             <configuration>
                 <port>37017</port> <!-- optional, default 27017 -->
@@ -47,5 +47,6 @@ Notes
 * If you want to run many Maven builds in parallel using Jenkins, try the [Port Allocator Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Port+Allocator+Plugin) to avoid port conflicts.
 * If you need to use a proxy to download MongoDB then you can either use `-Dhttp.proxyHost` and `-Dhttp.proxyPort` as additional Maven arguments (this will affect the entire build) or instruct the plugin to use a proxy when downloading Mongo by adding the `proxyHost` and `proxyPort` configuration properties.
 * Using the `file` logging mode results in a new log file created at `./embedmongo.log`
+* If you'd like the start goal to start mongodb and wait, you can add `-Dembedmongo.wait` to your Maven command line arguments
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/92ea4148abefddaeadb849b65212bd0d "githalytics.com")](http://githalytics.com/joelittlejohn/embedmongo-maven-plugin)
