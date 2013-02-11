@@ -19,7 +19,9 @@ import static java.util.Collections.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.Authenticator;
 import java.net.InetSocketAddress;
+import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.SocketAddress;
@@ -124,11 +126,27 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * @since 0.1.3
      */
     private String logging;
+    
+    /**
+     * The proxy user to be used when downloading MongoDB
+     * 
+     * @parameter expression="${embedmongo.proxyUser}" 
+     * @since 0.1.6
+     */
+    private String proxyUser;
+    
+    /**
+     * The proxy password to be used when downloading MondoDB
+     * 
+     * @parameter expression="${embedmongo.proxyPassword}"
+     * @since 0.1.6
+     */
+    private String proxyPassword;
 
     @Override
     @SuppressWarnings("unchecked")
     public void execute() throws MojoExecutionException, MojoFailureException {
-
+    	    	
         if (this.proxyHost != null && this.proxyHost.length() > 0) {
             this.addProxySelector();
         }
@@ -182,12 +200,22 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     }
 
     private void addProxySelector() {
+    	
+    	// Add authenticator with proxyUser and proxyPassword
+    	if(proxyUser != null && proxyPassword != null) {
+	    	Authenticator.setDefault(new Authenticator() {
+	    		public PasswordAuthentication getPasswordAuthentication() {
+	    			return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
+	    		}
+	    	});
+    	}
+    	
         final ProxySelector defaultProxySelector = ProxySelector.getDefault();
         ProxySelector.setDefault(new ProxySelector() {
             @Override
             public List<Proxy> select(URI uri) {
                 if (uri.getHost().equals("fastdl.mongodb.org")) {
-                    return singletonList(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)));
+                	return singletonList(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)));
                 } else {
                     return defaultProxySelector.select(uri);
                 }
