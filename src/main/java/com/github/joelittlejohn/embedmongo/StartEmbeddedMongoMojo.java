@@ -202,20 +202,20 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     private void addProxySelector() {
     	
     	// Add authenticator with proxyUser and proxyPassword
-    	if(proxyUser != null && proxyPassword != null) {
-	    	Authenticator.setDefault(new Authenticator() {
-	    		public PasswordAuthentication getPasswordAuthentication() {
-	    			return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
-	    		}
-	    	});
-    	}
+        if(proxyUser != null && proxyPassword != null) {
+            Authenticator.setDefault(new Authenticator() {
+	    	    public PasswordAuthentication getPasswordAuthentication() {
+	    		    return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
+	    	    }
+	        });
+        }
     	
         final ProxySelector defaultProxySelector = ProxySelector.getDefault();
         ProxySelector.setDefault(new ProxySelector() {
             @Override
             public List<Proxy> select(URI uri) {
                 if (uri.getHost().equals("fastdl.mongodb.org")) {
-                	return singletonList(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)));
+                    return singletonList(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)));
                 } else {
                     return defaultProxySelector.select(uri);
                 }
