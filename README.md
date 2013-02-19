@@ -26,6 +26,8 @@ Usage
                 <logging>file</logging> <!-- optional (file|console|none), default console -->
                 <proxyHost>myproxy.company.com</proxyHost>  <!-- optional, default is none -->
                 <proxyPort>8080</proxyPort>  <!-- optional, default 80 -->
+                <proxyUser>joebloggs</proxyUser>  <!-- optional, default is none -->
+                <proxyPassword>pa55w0rd</proxyPassword>  <!-- optional, default is none -->
                 <bindIp>127.0.0.1</bindIp> <!-- optional, default is to listen on all interfaces -->
             </configuration>
         </execution>
