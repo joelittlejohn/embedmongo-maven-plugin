@@ -156,10 +156,8 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
             RuntimeConfig config = new RuntimeConfig();
             config.setProcessOutput(getOutputConfig());
 
-            executable = MongodStarter.getInstance(config).prepare(new MongodConfig(getVersion(), bindIp, port, Network.localhostIsIPv6(), getDataDirectory(), null, 0));
-        } catch (UnknownHostException e) {
-            throw new MojoExecutionException("Unable to determine if localhost is ipv6", e);
-        } catch (DistributionException e) {
+            executable = MongodStarter.getInstance(config).prepare(new MongodConfig(getVersion(), bindIp, port, isLocalhostIPV6(), getDataDirectory(), null, 0));
+        }  catch (DistributionException e) {
             throw new MojoExecutionException("Failed to download MongoDB distribution: " + e.withDistribution(), e);
         }
 
@@ -251,4 +249,14 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         }
     }
 
+    private boolean isLocalhostIPV6() {
+        boolean isIp6;
+        try {
+            isIp6 = Network.localhostIsIPv6();
+        } catch (UnknownHostException e) {
+            getLog().warn("Unable to determine if localhost is IPv6, defaulting to false", e);
+            isIp6 = false;
+        }
+        return isIp6;
+    }
 }
