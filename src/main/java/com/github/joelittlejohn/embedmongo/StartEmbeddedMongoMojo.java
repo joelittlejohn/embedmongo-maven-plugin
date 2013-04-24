@@ -37,12 +37,17 @@ import org.apache.maven.plugin.MojoFailureException;
 import com.github.joelittlejohn.embedmongo.log.Loggers;
 import com.github.joelittlejohn.embedmongo.log.Loggers.LoggingStyle;
 
+import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
+import de.flapdoodle.embed.mongo.config.AbstractMongoConfig.Net;
+import de.flapdoodle.embed.mongo.config.AbstractMongoConfig.Storage;
+import de.flapdoodle.embed.mongo.config.AbstractMongoConfig.Timeout;
 import de.flapdoodle.embed.mongo.config.MongodConfig;
-import de.flapdoodle.embed.mongo.config.RuntimeConfig;
+import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.distribution.GenericVersion;
 import de.flapdoodle.embed.process.distribution.IVersion;
@@ -86,9 +91,10 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * @since 0.1.0
      */
     private File databaseDirectory;
-    
+
     /**
-     * An IP address for the MongoDB instance to be bound to during its execution.
+     * An IP address for the MongoDB instance to be bound to during its
+     * execution.
      * 
      * @parameter expression="${embedmongo.bindIp}"
      * @since 0.1.4
@@ -126,15 +132,15 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * @since 0.1.3
      */
     private String logging;
-    
+
     /**
      * The proxy user to be used when downloading MongoDB
      * 
-     * @parameter expression="${embedmongo.proxyUser}" 
+     * @parameter expression="${embedmongo.proxyUser}"
      * @since 0.1.6
      */
     private String proxyUser;
-    
+
     /**
      * The proxy password to be used when downloading MondoDB
      * 
@@ -146,17 +152,25 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     @Override
     @SuppressWarnings("unchecked")
     public void execute() throws MojoExecutionException, MojoFailureException {
-    	    	
+
         if (this.proxyHost != null && this.proxyHost.length() > 0) {
             this.addProxySelector();
         }
 
         MongodExecutable executable;
         try {
-            RuntimeConfig config = new RuntimeConfig();
-            config.setProcessOutput(getOutputConfig());
 
-            executable = MongodStarter.getInstance(config).prepare(new MongodConfig(getVersion(), bindIp, port, Network.localhostIsIPv6(), getDataDirectory(), null, 0));
+            IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
+                    .defaults(Command.MongoD)
+                    .processOutput(getOutputConfig())
+                    .build();
+
+            MongodConfig mongoConfig = new MongodConfig(getVersion(),
+                    new Net(bindIp, port, Network.localhostIsIPv6()),
+                    new Storage(getDataDirectory(), null, 0),
+                    new Timeout());
+
+            executable = MongodStarter.getInstance(runtimeConfig).prepare(mongoConfig);
         } catch (UnknownHostException e) {
             throw new MojoExecutionException("Unable to determine if localhost is ipv6", e);
         } catch (DistributionException e) {
@@ -200,16 +214,16 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     }
 
     private void addProxySelector() {
-    	
-    	// Add authenticator with proxyUser and proxyPassword
-        if(proxyUser != null && proxyPassword != null) {
+
+        // Add authenticator with proxyUser and proxyPassword
+        if (proxyUser != null && proxyPassword != null) {
             Authenticator.setDefault(new Authenticator() {
-	    	    public PasswordAuthentication getPasswordAuthentication() {
-	    		    return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
-	    	    }
-	        });
+                public PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
+                }
+            });
         }
-    	
+
         final ProxySelector defaultProxySelector = ProxySelector.getDefault();
         ProxySelector.setDefault(new ProxySelector() {
             @Override
@@ -227,10 +241,10 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         });
     }
 
-    private IVersion getVersion() throws MojoExecutionException {
+    private IVersion getVersion() {
         String versionEnumName = this.version.toUpperCase().replaceAll("\\.", "_");
 
-        if (this.version.charAt(0) != 'V') {
+        if (versionEnumName.charAt(0) != 'V') {
             versionEnumName = "V" + versionEnumName;
         }
 
