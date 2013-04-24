@@ -3,8 +3,14 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>com.github.joelittlejohn.embedmongo</groupId>
+        <artifactId>embedmongo-maven-plugin-test-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
     <groupId>com.github.joelittlejohn.embedmongo</groupId>
-    <artifactId>embedmonog-maven-plugin-test</artifactId>
+    <artifactId>embedmongo-maven-plugin-test3</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
     <url>https://github.com/joelittlejohn/embedmongo-maven-plugin</url>
@@ -23,7 +29,7 @@
             <plugin>
                 <groupId>com.github.joelittlejohn.embedmongo</groupId>
                 <artifactId>embedmongo-maven-plugin</artifactId>
-                <version>0.1.5-SNAPSHOT</version>
+                <version>0.1.7-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>start</id>
@@ -33,7 +39,8 @@
                         <configuration>
                             <port>37017</port>
                             <databaseDirectory>/tmp/mongotest</databaseDirectory>
-                            <logging>file</logging>
+                            <logging>console</logging>
+			    <version>v2.2.0</version>
                         </configuration>
                     </execution>
                     <execution>
