@@ -3,6 +3,7 @@
 ## 0.1.7
 
 * Add `logFile`/`logFileEncoding` configuration options (thanks @matthewadams)
+* Update to [embedmongo.flapdoodle.de](https://github.com/flapdoodle-oss/embedmongo.flapdoodle.de) 1.31
 
 ## 0.1.6
 
