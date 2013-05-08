@@ -24,7 +24,7 @@ Usage
                 <version>2.0.4</version>  <!-- optional, default 2.2.1 -->
                 <databaseDirectory>/tmp/mongotest</databaseDirectory>  <!-- optional, default is a new dir in java.io.tmpdir -->
                 <logging>file</logging> <!-- optional (file|console|none), default console -->
-                <logFile>myfile.log</logFile> <!-- optional, can be used when logging=file, default is embongo.log -->
+                <logFile>${project.build.directory}/myfile.log</logFile> <!-- optional, can be used when logging=file, default is ./embedmongo.log -->
                 <logFileEncoding>utf-8</logFileEncoding> <!-- optional, can be used when logging=file, default is utf-8 -->
                 <proxyHost>myproxy.company.com</proxyHost>  <!-- optional, default is none -->
                 <proxyPort>8080</proxyPort>  <!-- optional, default 80 -->
@@ -50,7 +50,7 @@ Notes
 * If you omit/forget the `stop` goal, any Mongo process spawned by the `start` goal will be stopped when the JVM terminates.
 * If you want to run many Maven builds in parallel using Jenkins, try the [Port Allocator Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Port+Allocator+Plugin) to avoid port conflicts.
 * If you need to use a proxy to download MongoDB then you can either use `-Dhttp.proxyHost` and `-Dhttp.proxyPort` as additional Maven arguments (this will affect the entire build) or instruct the plugin to use a proxy when downloading Mongo by adding the `proxyHost` and `proxyPort` configuration properties.
-* Using the `file` logging mode results in a new log file created at `./embedmongo.log`
+* Using the `file` logging mode results in a new log file created at `./embedmongo.log` unless you specify via `<logFile>` (where `.` means the curent working directory, usually the same as `${basedir}`).
 * If you'd like the start goal to start mongodb and wait, you can add `-Dembedmongo.wait` to your Maven command line arguments
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/92ea4148abefddaeadb849b65212bd0d "githalytics.com")](http://githalytics.com/joelittlejohn/embedmongo-maven-plugin)
