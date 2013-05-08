@@ -1,5 +1,9 @@
 # embedmongo-maven-plugin Changelog
 
+## 0.1.7
+
+* Add `logFile`/`logFileEncoding` configuration options (thanks @matthewadams)
+
 ## 0.1.6
 
 * Add `proxyUser`/`proxyPassword` configuration options

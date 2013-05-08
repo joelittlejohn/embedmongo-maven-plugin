@@ -12,7 +12,7 @@ Usage
 <plugin>
     <groupId>com.github.joelittlejohn.embedmongo</groupId>
     <artifactId>embedmongo-maven-plugin</artifactId>
-    <version>0.1.6</version>
+    <version>0.1.7</version>
     <executions>
         <execution>
             <id>start</id>
@@ -24,6 +24,8 @@ Usage
                 <version>2.0.4</version>  <!-- optional, default 2.2.1 -->
                 <databaseDirectory>/tmp/mongotest</databaseDirectory>  <!-- optional, default is a new dir in java.io.tmpdir -->
                 <logging>file</logging> <!-- optional (file|console|none), default console -->
+                <logFile>myfile.log</logFile> <!-- optional, can be used when logging=file, default is embongo.log -->
+                <logFileEncoding>utf-8</logFileEncoding> <!-- optional, can be used when logging=file, default is utf-8 -->
                 <proxyHost>myproxy.company.com</proxyHost>  <!-- optional, default is none -->
                 <proxyPort>8080</proxyPort>  <!-- optional, default 80 -->
                 <proxyUser>joebloggs</proxyUser>  <!-- optional, default is none -->
