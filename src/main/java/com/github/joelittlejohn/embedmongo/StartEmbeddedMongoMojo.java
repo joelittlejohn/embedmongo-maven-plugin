@@ -134,6 +134,18 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     private String logging;
 
     /**
+     * @parameter expression="${embedmongo.logFile}"
+     * @since 0.1.7
+     */
+    private String logFile = Loggers.DEFAULT_LOG_FILE_NAME;
+
+    /**
+     * @parameter expression="${embedmongo.logFileEncoding}"
+     * @since 0.1.7
+     */
+    private String logFileEncoding = Loggers.DEFAULT_LOG_FILE_ENCODING;
+
+    /**
      * The proxy user to be used when downloading MongoDB
      * 
      * @parameter expression="${embedmongo.proxyUser}"
@@ -204,7 +216,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
             case CONSOLE:
                 return Loggers.console();
             case FILE:
-                return Loggers.file();
+                return Loggers.file(logFile, logFileEncoding);
             case NONE:
                 return Loggers.none();
             default:
