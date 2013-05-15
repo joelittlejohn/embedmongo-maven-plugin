@@ -28,8 +28,11 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import com.github.joelittlejohn.embedmongo.port.PortHelper;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -53,6 +56,7 @@ import de.flapdoodle.embed.process.distribution.GenericVersion;
 import de.flapdoodle.embed.process.distribution.IVersion;
 import de.flapdoodle.embed.process.exceptions.DistributionException;
 import de.flapdoodle.embed.process.runtime.Network;
+import org.apache.maven.project.MavenProject;
 
 /**
  * When invoked, this goal starts an instance of mongo. The required binaries
@@ -75,6 +79,14 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * @since 0.1.0
      */
     private int port;
+
+    /**
+     * Random port should be used for MongoDB instead of the one specified by {@code port}.
+     *
+     * @parameter expression="${embedmongo.randomPort}" default-value="false"
+     * @since 0.1.8
+     */
+    private boolean randomPort;
 
     /**
      * The version of MongoDB to run e.g. 2.1.1, 1.6 v1.8.2, V2_0_4,
@@ -161,6 +173,23 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      */
     private String proxyPassword;
 
+    /**
+     * The maven project.
+     *
+     * @parameter expression="${project}"
+     * @readonly
+     */
+    private MavenProject project;
+
+    /**
+     * The Maven Session Object for setting allocated port to session's user properties.
+     *
+     * @parameter expression="${session}"
+     * @readonly
+     */
+    private MavenSession session;
+
+
     @Override
     @SuppressWarnings("unchecked")
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -176,7 +205,10 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
                     .defaults(Command.MongoD)
                     .processOutput(getOutputConfig())
                     .build();
-
+            if (randomPort) {
+                port = new PortHelper().allocateRandomPort();
+            }
+            savePortToSessionUserProperties();
             MongodConfig mongoConfig = new MongodConfig(getVersion(),
                     new Net(bindIp, port, Network.localhostIsIPv6()),
                     new Storage(getDataDirectory(), null, 0),
@@ -206,6 +238,25 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to start the mongod", e);
         }
+    }
+
+    /**
+     * Saves port to the {@link MavenSession#userProperties} to provide client with ability to retrieve port
+     * later in integration-test-phase via {@link PortHelper#getMongoPort(String)} method.
+     * Port is saved as a property {@code MONGO_PORT_PROPERTY + "." + artifactId} where {@code artifactId}
+     * is id of project artifact where the integration tests are run.
+     * The {@code artifactId} suffix is necessary because concurrent executions of {@code embedmongo-maven-plugin}
+     * cannot share the same property.
+     * <p>
+     * {@code userProperties} seems to be the only way how to propagate property to the forked JVM run
+     * started by failsafe plugin.
+     * </p>
+     */
+    private void savePortToSessionUserProperties() {
+        final String portKey = PortHelper.MONGO_PORT_PROPERTY + "." + project.getArtifactId();
+        final String portValue = Integer.toString(port);
+        final Properties userProperties = session.getUserProperties();
+        userProperties.setProperty(portKey, portValue);
     }
 
     private ProcessOutput getOutputConfig() throws MojoFailureException {
