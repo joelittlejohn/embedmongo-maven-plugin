@@ -1,4 +1,4 @@
-embedmongo-maven-plugin [![Build Status](https://buildhive.cloudbees.com/job/joelittlejohn/job/embedmongo-maven-plugin/badge/icon)](https://buildhive.cloudbees.com/job/joelittlejohn/job/embedmongo-maven-plugin/)
+embedmongo-maven-plugin [![Build Status](https://travis-ci.org/joelittlejohn/embedmongo-maven-plugin.png)](https://travis-ci.org/joelittlejohn/embedmongo-maven-plugin)
 =======================
 
 Maven plugin wrapper for the [flapdoodle.de embedded MongoDB API](http://github.com/flapdoodle-oss/embedmongo.flapdoodle.de).
