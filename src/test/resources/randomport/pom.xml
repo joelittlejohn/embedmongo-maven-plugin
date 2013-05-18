@@ -39,6 +39,7 @@
                         </goals>
                         <configuration>
                             <port>37017</port>
+                            <randomPort>true</randomPort>
                             <databaseDirectory>/tmp/mongotest</databaseDirectory>
                             <logging>console</logging>
                             <version>v2.2.0</version>
@@ -63,6 +64,11 @@
                             <goal>integration-test</goal>
                             <goal>verify</goal>
                         </goals>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <mongo.port>${embedmongo.port}</mongo.port>
+                            </systemPropertyVariables>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

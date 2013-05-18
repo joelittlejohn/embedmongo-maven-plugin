@@ -13,13 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.joelittlejohn.embedmongo.port;
+package com.github.joelittlejohn.embedmongo;
 
-/**
- * Represents exceptional state when given port is not available.
- */
-public class PortUnavailableException extends RuntimeException {
-    public PortUnavailableException(int port, Throwable cause) {
-        super("Port " + port + " is not available", cause);
+import java.io.IOException;
+import java.net.ServerSocket;
+
+public final class PortUtils {
+
+    private PortUtils() {
     }
+
+    public static int allocateRandomPort() {
+        try {
+            ServerSocket server = new ServerSocket(0);
+            int port = server.getLocalPort();
+            server.close();
+            return port;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to acquire a random free port", e);
+        }
+    }
+
 }

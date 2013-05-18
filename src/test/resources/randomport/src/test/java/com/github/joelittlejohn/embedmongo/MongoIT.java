@@ -15,11 +15,10 @@
  */
 package com.github.joelittlejohn.embedmongo;
 
-import com.github.joelittlejohn.embedmongo.port.PortHelper;
+import java.net.Socket;
+
 import org.junit.After;
 import org.junit.Test;
-
-import java.net.Socket;
 
 public class MongoIT {
 
@@ -27,7 +26,7 @@ public class MongoIT {
 
     @Test
     public void testConnectMongo() throws Exception {
-        mongoSocket = new Socket("127.0.0.1", PortHelper.getMongoPort("embedmongo-maven-plugin-random-port-test"));
+        mongoSocket = new Socket("127.0.0.1", Integer.valueOf(System.getProperty("mongo.port")));
     }
 
     @After

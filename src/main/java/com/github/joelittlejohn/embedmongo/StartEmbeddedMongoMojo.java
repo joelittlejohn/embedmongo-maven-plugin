@@ -28,14 +28,12 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import com.github.joelittlejohn.embedmongo.port.PortHelper;
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 
 import com.github.joelittlejohn.embedmongo.log.Loggers;
 import com.github.joelittlejohn.embedmongo.log.Loggers.LoggingStyle;
@@ -56,7 +54,6 @@ import de.flapdoodle.embed.process.distribution.GenericVersion;
 import de.flapdoodle.embed.process.distribution.IVersion;
 import de.flapdoodle.embed.process.exceptions.DistributionException;
 import de.flapdoodle.embed.process.runtime.Network;
-import org.apache.maven.project.MavenProject;
 
 /**
  * When invoked, this goal starts an instance of mongo. The required binaries
@@ -81,8 +78,11 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     private int port;
 
     /**
-     * Random port should be used for MongoDB instead of the one specified by {@code port}.
-     *
+     * Whether a random free port should be used for MongoDB instead of the one
+     * specified by {@code port}. If {@code randomPort} is {@code true}, the
+     * random port chosen will be available in the Maven project property
+     * {@code embedmongo.port}.
+     * 
      * @parameter expression="${embedmongo.randomPort}" default-value="false"
      * @since 0.1.8
      */
@@ -149,13 +149,13 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * @parameter expression="${embedmongo.logFile}"
      * @since 0.1.7
      */
-    private String logFile = Loggers.DEFAULT_LOG_FILE_NAME;
+    private final String logFile = Loggers.DEFAULT_LOG_FILE_NAME;
 
     /**
      * @parameter expression="${embedmongo.logFileEncoding}"
      * @since 0.1.7
      */
-    private String logFileEncoding = Loggers.DEFAULT_LOG_FILE_ENCODING;
+    private final String logFileEncoding = Loggers.DEFAULT_LOG_FILE_ENCODING;
 
     /**
      * The proxy user to be used when downloading MongoDB
@@ -175,20 +175,11 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * The maven project.
-     *
+     * 
      * @parameter expression="${project}"
      * @readonly
      */
     private MavenProject project;
-
-    /**
-     * The Maven Session Object for setting allocated port to session's user properties.
-     *
-     * @parameter expression="${session}"
-     * @readonly
-     */
-    private MavenSession session;
-
 
     @Override
     @SuppressWarnings("unchecked")
@@ -205,10 +196,12 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
                     .defaults(Command.MongoD)
                     .processOutput(getOutputConfig())
                     .build();
+
             if (randomPort) {
-                port = new PortHelper().allocateRandomPort();
+                port = PortUtils.allocateRandomPort();
             }
-            savePortToSessionUserProperties();
+            savePortToProjectProperties();
+
             MongodConfig mongoConfig = new MongodConfig(getVersion(),
                     new Net(bindIp, port, Network.localhostIsIPv6()),
                     new Storage(getDataDirectory(), null, 0),
@@ -241,22 +234,12 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     }
 
     /**
-     * Saves port to the {@link MavenSession#userProperties} to provide client with ability to retrieve port
-     * later in integration-test-phase via {@link PortHelper#getMongoPort(String)} method.
-     * Port is saved as a property {@code MONGO_PORT_PROPERTY + "." + artifactId} where {@code artifactId}
-     * is id of project artifact where the integration tests are run.
-     * The {@code artifactId} suffix is necessary because concurrent executions of {@code embedmongo-maven-plugin}
-     * cannot share the same property.
-     * <p>
-     * {@code userProperties} seems to be the only way how to propagate property to the forked JVM run
-     * started by failsafe plugin.
-     * </p>
+     * Saves port to the {@link MavenProject#getProperties()} (with the property
+     * name {@code embedmongo.port}) to allow others (plugins, tests, etc) to
+     * find the randomly allocated port.
      */
-    private void savePortToSessionUserProperties() {
-        final String portKey = PortHelper.MONGO_PORT_PROPERTY + "." + project.getArtifactId();
-        final String portValue = Integer.toString(port);
-        final Properties userProperties = session.getUserProperties();
-        userProperties.setProperty(portKey, portValue);
+    private void savePortToProjectProperties() {
+        project.getProperties().put("embedmongo.port", String.valueOf(port));
     }
 
     private ProcessOutput getOutputConfig() throws MojoFailureException {
@@ -281,6 +264,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         // Add authenticator with proxyUser and proxyPassword
         if (proxyUser != null && proxyPassword != null) {
             Authenticator.setDefault(new Authenticator() {
+                @Override
                 public PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
                 }

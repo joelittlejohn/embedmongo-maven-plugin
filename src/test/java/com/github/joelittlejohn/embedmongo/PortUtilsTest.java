@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.joelittlejohn.embedmongo.port;
-
-import org.junit.After;
-import org.junit.Test;
+package com.github.joelittlejohn.embedmongo;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -26,9 +23,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class PortHelperTest {
+import org.junit.After;
+import org.junit.Test;
 
-    private final PortHelper portHelper = new PortHelper();
+public class PortUtilsTest {
+
     private final ScheduledExecutorService testPooledExecutor = Executors.newScheduledThreadPool(20);
 
     @After
@@ -37,8 +36,10 @@ public class PortHelperTest {
     }
 
     /**
-     * This test executes method {@link com.github.joelittlejohn.embedmongo.port.PortHelper#allocateRandomPort()} many times
-     * concurrently to make sure that port allocation works correctly under stress.
+     * This test executes method
+     * {@link com.github.joelittlejohn.embedmongo.PortUtils#allocateRandomPort()}
+     * many times concurrently to make sure that port allocation works correctly
+     * under stress.
      */
     @Test
     public void testAllocateRandomPort() throws Exception {
@@ -50,9 +51,9 @@ public class PortHelperTest {
             public void run() {
                 int port = -1;
                 try {
-                    port = portHelper.allocateRandomPort();
+                    port = PortUtils.allocateRandomPort();
                     new ServerSocket(port);
-                    // port has been bind successfully
+                    // port has been bound successfully
                 } catch (IOException e) {
                     throw new RuntimeException("Port " + port + " cannot be bind!");
                 } finally {
