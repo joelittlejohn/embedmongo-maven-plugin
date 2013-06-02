@@ -12,7 +12,7 @@ Usage
 <plugin>
     <groupId>com.github.joelittlejohn.embedmongo</groupId>
     <artifactId>embedmongo-maven-plugin</artifactId>
-    <version>0.1.7</version>
+    <version>0.1.8</version>
     <executions>
         <execution>
             <id>start</id>
@@ -21,6 +21,7 @@ Usage
             </goals>
             <configuration>
                 <port>37017</port> <!-- optional, default 27017 -->
+                <randomPort>true</randomPort> <!-- optional, default is false, if true allocates a random port and overrides embedmongo.port -->
                 <version>2.0.4</version>  <!-- optional, default 2.2.1 -->
                 <databaseDirectory>/tmp/mongotest</databaseDirectory>  <!-- optional, default is a new dir in java.io.tmpdir -->
                 <logging>file</logging> <!-- optional (file|console|none), default console -->
@@ -48,7 +49,8 @@ Notes
 
 * By default, the `start` goal is bound to `pre-integration-test`, the `stop` goal is bound to `post-integration-test`. You can of course bind to different phases if required.
 * If you omit/forget the `stop` goal, any Mongo process spawned by the `start` goal will be stopped when the JVM terminates.
-* If you want to run many Maven builds in parallel using Jenkins, try the [Port Allocator Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Port+Allocator+Plugin) to avoid port conflicts.
+* If you want to run Maven builds in parallel you can use `randomPort` to avoid port conflicts, the value allocated will be available to other plugins in the project as a property `embedmongo.port`.
+  If you are using Jenkins, you can also try the [Port Allocator Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Port+Allocator+Plugin).
 * If you need to use a proxy to download MongoDB then you can either use `-Dhttp.proxyHost` and `-Dhttp.proxyPort` as additional Maven arguments (this will affect the entire build) or instruct the plugin to use a proxy when downloading Mongo by adding the `proxyHost` and `proxyPort` configuration properties.
 * Using the `file` logging mode results in a new log file created at `./embedmongo.log` unless you specify via `<logFile>` (where `.` means the curent working directory, usually the same as `${basedir}`).
 * If you'd like the start goal to start mongodb and wait, you can add `-Dembedmongo.wait` to your Maven command line arguments

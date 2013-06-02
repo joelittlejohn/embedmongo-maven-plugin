@@ -1,5 +1,9 @@
 # embedmongo-maven-plugin Changelog
 
+## 0.1.8
+
+* Add `randomPort` configuration option (thanks @jumarko)
+
 ## 0.1.7
 
 * Add `logFile`/`logFileEncoding` configuration options (thanks @matthewadams)
