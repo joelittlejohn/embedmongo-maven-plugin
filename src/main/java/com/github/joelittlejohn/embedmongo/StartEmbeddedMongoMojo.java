@@ -147,15 +147,17 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * @parameter expression="${embedmongo.logFile}"
+     *            default-value="embedmongo.log"
      * @since 0.1.7
      */
-    private final String logFile = Loggers.DEFAULT_LOG_FILE_NAME;
+    private String logFile;
 
     /**
      * @parameter expression="${embedmongo.logFileEncoding}"
+     *            default-value="utf-8"
      * @since 0.1.7
      */
-    private final String logFileEncoding = Loggers.DEFAULT_LOG_FILE_ENCODING;
+    private String logFileEncoding;
 
     /**
      * The proxy user to be used when downloading MongoDB

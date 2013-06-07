@@ -25,9 +25,6 @@ public class Loggers {
         FILE, CONSOLE, NONE
     }
 
-    public static final String DEFAULT_LOG_FILE_NAME = "embedmongo.log";
-    public static final String DEFAULT_LOG_FILE_ENCODING = "utf-8";
-
     public static ProcessOutput file(String logFile, String encoding) {
         FileOutputStreamProcessor file = new FileOutputStreamProcessor(logFile, encoding);
 

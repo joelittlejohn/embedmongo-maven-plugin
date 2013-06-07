@@ -24,20 +24,15 @@ import de.flapdoodle.embed.process.io.IStreamProcessor;
 public class FileOutputStreamProcessor implements IStreamProcessor {
 
     private static OutputStreamWriter stream;
-    
+
     private String logFile;
     private String encoding;
-    
-    public FileOutputStreamProcessor(String logFile) {
-        this(logFile, Loggers.DEFAULT_LOG_FILE_ENCODING);
-    }
-
 
     public FileOutputStreamProcessor(String logFile, String encoding) {
         setLogFile(logFile);
         setEncoding(encoding);
     }
-    
+
     @Override
     public synchronized void process(String block) {
         try {
@@ -58,15 +53,15 @@ public class FileOutputStreamProcessor implements IStreamProcessor {
     public void onProcessed() {
         process("\n");
     }
-    
-    public void setLogFile(String logFile) {
+
+    private void setLogFile(String logFile) {
         if (logFile == null || logFile.trim().length() == 0) {
             throw new IllegalArgumentException("no logFile given");
         }
         this.logFile = logFile;
     }
-    
-    public void setEncoding(String encoding) {
+
+    private void setEncoding(String encoding) {
         if (encoding == null || encoding.trim().length() == 0) {
             throw new IllegalArgumentException("no encoding given");
         }
