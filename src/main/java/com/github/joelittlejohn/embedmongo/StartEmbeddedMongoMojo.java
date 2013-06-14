@@ -15,7 +15,7 @@
  */
 package com.github.joelittlejohn.embedmongo;
 
-import static java.util.Collections.*;
+import static java.util.Collections.singletonList;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,15 +45,19 @@ import de.flapdoodle.embed.mongo.MongodStarter;
 import de.flapdoodle.embed.mongo.config.AbstractMongoConfig.Net;
 import de.flapdoodle.embed.mongo.config.AbstractMongoConfig.Storage;
 import de.flapdoodle.embed.mongo.config.AbstractMongoConfig.Timeout;
+import de.flapdoodle.embed.mongo.config.ArtifactStoreBuilder;
+import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
 import de.flapdoodle.embed.mongo.config.MongodConfig;
 import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
+import de.flapdoodle.embed.process.config.store.IDownloadConfig;
 import de.flapdoodle.embed.process.distribution.GenericVersion;
 import de.flapdoodle.embed.process.distribution.IVersion;
 import de.flapdoodle.embed.process.exceptions.DistributionException;
 import de.flapdoodle.embed.process.runtime.Network;
+import de.flapdoodle.embed.process.store.IArtifactStore;
 
 /**
  * When invoked, this goal starts an instance of mongo. The required binaries
@@ -160,6 +164,15 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     private String logFileEncoding;
 
     /**
+     * The base URL to be used when downloading MongoDB
+     * 
+     * @parameter expression="${embedmongo.downloadPath}"
+     *            default-value="http://fastdl.mongodb.org/"
+     * @since 0.1.10
+     */
+    private String downloadPath;
+
+    /**
      * The proxy user to be used when downloading MongoDB
      * 
      * @parameter expression="${embedmongo.proxyUser}"
@@ -197,6 +210,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
             IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
                     .defaults(Command.MongoD)
                     .processOutput(getOutputConfig())
+                    .artifactStore(getArtifactStore())
                     .build();
 
             if (randomPort) {
@@ -259,6 +273,19 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
                 throw new MojoFailureException("Unexpected logging style encountered: \"" + logging + "\" -> " + loggingStyle);
         }
 
+    }
+    
+    private IArtifactStore getArtifactStore()
+    {
+        IDownloadConfig downloadConfig = new DownloadConfigBuilder()
+                .defaultsForCommand(Command.MongoD)
+                .downloadPath(downloadPath)
+                .build();
+        IArtifactStore artifactStore = new ArtifactStoreBuilder()
+                .defaults(Command.MongoD)
+                .download(downloadConfig)
+                .build();
+        return artifactStore;
     }
 
     private void addProxySelector() {
