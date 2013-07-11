@@ -15,29 +15,8 @@
  */
 package com.github.joelittlejohn.embedmongo;
 
-import static java.util.Collections.singletonList;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.PasswordAuthentication;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.SocketAddress;
-import java.net.URI;
-import java.net.UnknownHostException;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
-
 import com.github.joelittlejohn.embedmongo.log.Loggers;
 import com.github.joelittlejohn.embedmongo.log.Loggers.LoggingStyle;
-
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
@@ -53,16 +32,30 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.config.store.IDownloadConfig;
+import de.flapdoodle.embed.process.distribution.Distribution;
 import de.flapdoodle.embed.process.distribution.GenericVersion;
 import de.flapdoodle.embed.process.distribution.IVersion;
 import de.flapdoodle.embed.process.exceptions.DistributionException;
+import de.flapdoodle.embed.process.runtime.ICommandLinePostProcessor;
 import de.flapdoodle.embed.process.runtime.Network;
 import de.flapdoodle.embed.process.store.IArtifactStore;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.*;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static java.util.Collections.singletonList;
 
 /**
  * When invoked, this goal starts an instance of mongo. The required binaries
  * are downloaded if no mongo release is found in <code>~/.embedmongo</code>.
- * 
+ *
  * @goal start
  * @phase pre-integration-test
  * @see <a
@@ -75,7 +68,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * The port MongoDB should run on.
-     * 
+     *
      * @parameter expression="${embedmongo.port}" default-value="27017"
      * @since 0.1.0
      */
@@ -86,7 +79,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * specified by {@code port}. If {@code randomPort} is {@code true}, the
      * random port chosen will be available in the Maven project property
      * {@code embedmongo.port}.
-     * 
+     *
      * @parameter expression="${embedmongo.randomPort}" default-value="false"
      * @since 0.1.8
      */
@@ -94,7 +87,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * The version of MongoDB to run e.g. 2.1.1, 1.6 v1.8.2, V2_0_4,
-     * 
+     *
      * @parameter expression="${embedmongo.version}" default-value="2.2.1"
      * @since 0.1.0
      */
@@ -102,7 +95,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * The location of a directory that will hold the MongoDB data files.
-     * 
+     *
      * @parameter expression="${embedmongo.databaseDirectory}"
      * @since 0.1.0
      */
@@ -111,7 +104,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     /**
      * An IP address for the MongoDB instance to be bound to during its
      * execution.
-     * 
+     *
      * @parameter expression="${embedmongo.bindIp}"
      * @since 0.1.4
      */
@@ -119,7 +112,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * A proxy hostname to be used when downloading MongoDB distributions.
-     * 
+     *
      * @parameter expression="${embedmongo.proxyHost}"
      * @since 0.1.1
      */
@@ -127,7 +120,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * A proxy port to be used when downloading MongoDB distributions.
-     * 
+     *
      * @parameter expression="${embedmongo.proxyPort}" default-value="80"
      * @since 0.1.1
      */
@@ -137,7 +130,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * Block immediately and wait until MongoDB is explicitly stopped (eg:
      * {@literal <ctrl-c>}). This option makes this goal similar in spirit to
      * something like jetty:run, useful for interactive debugging.
-     * 
+     *
      * @parameter expression="${embedmongo.wait}" default-value="false"
      * @since 0.1.2
      */
@@ -151,46 +144,53 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * @parameter expression="${embedmongo.logFile}"
-     *            default-value="embedmongo.log"
+     * default-value="embedmongo.log"
      * @since 0.1.7
      */
     private String logFile;
 
     /**
      * @parameter expression="${embedmongo.logFileEncoding}"
-     *            default-value="utf-8"
+     * default-value="utf-8"
      * @since 0.1.7
      */
     private String logFileEncoding;
 
     /**
      * The base URL to be used when downloading MongoDB
-     * 
+     *
      * @parameter expression="${embedmongo.downloadPath}"
-     *            default-value="http://fastdl.mongodb.org/"
+     * default-value="http://fastdl.mongodb.org/"
      * @since 0.1.10
      */
     private String downloadPath;
 
     /**
      * The proxy user to be used when downloading MongoDB
-     * 
+     *
      * @parameter expression="${embedmongo.proxyUser}"
      * @since 0.1.6
      */
     private String proxyUser;
 
     /**
-     * The proxy password to be used when downloading MondoDB
-     * 
+     * The proxy password to be used when downloading MongoDB
+     *
      * @parameter expression="${embedmongo.proxyPassword}"
      * @since 0.1.6
      */
     private String proxyPassword;
 
     /**
+     * Should authorization be enabled for MongoDB
+     *
+     * @parameter expression="${embedmongo.authEnabled}"
+     */
+    private boolean authEnabled;
+
+    /**
      * The maven project.
-     * 
+     *
      * @parameter expression="${project}"
      * @readonly
      */
@@ -207,10 +207,26 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         MongodExecutable executable;
         try {
 
+            final ICommandLinePostProcessor commandLinePostProcessor;
+            if (authEnabled) {
+                commandLinePostProcessor = new ICommandLinePostProcessor() {
+                    @Override
+                    public List<String> process(
+                            final Distribution distribution, final List<String> args) {
+                        args.remove("--noauth");
+                        args.add("--auth");
+                        return args;
+                    }
+                };
+            } else {
+                commandLinePostProcessor = new ICommandLinePostProcessor.Noop();
+            }
+
             IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
                     .defaults(Command.MongoD)
                     .processOutput(getOutputConfig())
                     .artifactStore(getArtifactStore())
+                    .commandLinePostProcessor(commandLinePostProcessor)
                     .build();
 
             if (randomPort) {
@@ -274,9 +290,8 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         }
 
     }
-    
-    private IArtifactStore getArtifactStore()
-    {
+
+    private IArtifactStore getArtifactStore() {
         IDownloadConfig downloadConfig = new DownloadConfigBuilder()
                 .defaultsForCommand(Command.MongoD)
                 .downloadPath(downloadPath)
