@@ -30,7 +30,6 @@
             <plugin>
                 <groupId>com.github.joelittlejohn.embedmongo</groupId>
                 <artifactId>embedmongo-maven-plugin</artifactId>
-                <version>0.1.9-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>start</id>

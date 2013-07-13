@@ -29,7 +29,6 @@
             <plugin>
                 <groupId>com.github.joelittlejohn.embedmongo</groupId>
                 <artifactId>embedmongo-maven-plugin</artifactId>
-                <version>0.1.9-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>start</id>
@@ -40,7 +39,8 @@
                             <port>37017</port>
                             <databaseDirectory>/tmp/mongotest</databaseDirectory>
                             <logging>console</logging>
-			    <version>v2.2.0</version>
+                            <version>v2.2.0</version>
+                            <authEnabled>true</authEnabled>
                         </configuration>
                     </execution>
                     <execution>

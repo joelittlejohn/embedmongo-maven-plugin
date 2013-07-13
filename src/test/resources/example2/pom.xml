@@ -29,7 +29,6 @@
             <plugin>
                 <groupId>com.github.joelittlejohn.embedmongo</groupId>
                 <artifactId>embedmongo-maven-plugin</artifactId>
-                <version>0.1.9-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>start</id>
@@ -38,10 +37,11 @@
                         </goals>
                         <configuration>
                             <port>37017</port>
-			    <version>2.1.1</version>
+			                <version>2.1.1</version>
                             <databaseDirectory>.</databaseDirectory>
                             <logging>file</logging>
-			    <bindIp>127.0.0.1</bindIp>
+            			    <bindIp>127.0.0.1</bindIp>
+                            <authEnabled>false</authEnabled>
                         </configuration>
                     </execution>
                     <execution>
