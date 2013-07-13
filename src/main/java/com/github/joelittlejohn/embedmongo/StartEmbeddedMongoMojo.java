@@ -15,7 +15,7 @@
  */
 package com.github.joelittlejohn.embedmongo;
 
-import static java.util.Collections.singletonList;
+import static java.util.Collections.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,9 +53,11 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.config.store.IDownloadConfig;
+import de.flapdoodle.embed.process.distribution.Distribution;
 import de.flapdoodle.embed.process.distribution.GenericVersion;
 import de.flapdoodle.embed.process.distribution.IVersion;
 import de.flapdoodle.embed.process.exceptions.DistributionException;
+import de.flapdoodle.embed.process.runtime.ICommandLinePostProcessor;
 import de.flapdoodle.embed.process.runtime.Network;
 import de.flapdoodle.embed.process.store.IArtifactStore;
 
@@ -189,6 +191,13 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     private String proxyPassword;
 
     /**
+     * Should authorization be enabled for MongoDB
+     * 
+     * @parameter expression="${embedmongo.authEnabled}" default-value="false"
+     */
+    private boolean authEnabled;
+
+    /**
      * The maven project.
      * 
      * @parameter expression="${project}"
@@ -207,10 +216,25 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         MongodExecutable executable;
         try {
 
+            final ICommandLinePostProcessor commandLinePostProcessor;
+            if (authEnabled) {
+                commandLinePostProcessor = new ICommandLinePostProcessor() {
+                    @Override
+                    public List<String> process(final Distribution distribution, final List<String> args) {
+                        args.remove("--noauth");
+                        args.add("--auth");
+                        return args;
+                    }
+                };
+            } else {
+                commandLinePostProcessor = new ICommandLinePostProcessor.Noop();
+            }
+
             IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
                     .defaults(Command.MongoD)
                     .processOutput(getOutputConfig())
                     .artifactStore(getArtifactStore())
+                    .commandLinePostProcessor(commandLinePostProcessor)
                     .build();
 
             if (randomPort) {
@@ -274,7 +298,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         }
 
     }
-    
+
     private IArtifactStore getArtifactStore()
     {
         IDownloadConfig downloadConfig = new DownloadConfigBuilder()
