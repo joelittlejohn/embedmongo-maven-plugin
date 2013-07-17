@@ -52,7 +52,7 @@ Notes
 * If you want to run Maven builds in parallel you can use `randomPort` to avoid port conflicts, the value allocated will be available to other plugins in the project as a property `embedmongo.port`.
   If you are using Jenkins, you can also try the [Port Allocator Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Port+Allocator+Plugin).
 * If you need to use a proxy to download MongoDB then you can either use `-Dhttp.proxyHost` and `-Dhttp.proxyPort` as additional Maven arguments (this will affect the entire build) or instruct the plugin to use a proxy when downloading Mongo by adding the `proxyHost` and `proxyPort` configuration properties.
-* Using the `file` logging mode results in a new log file created at `./embedmongo.log` unless you specify via `<logFile>` (where `.` means the curent working directory, usually the same as `${basedir}`).
+* If you are having trouble with Windows firewall rules, try setting the _bindIp_ config property to `127.0.0.1`.
 * If you'd like the start goal to start mongodb and wait, you can add `-Dembedmongo.wait` to your Maven command line arguments
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/92ea4148abefddaeadb849b65212bd0d "githalytics.com")](http://githalytics.com/joelittlejohn/embedmongo-maven-plugin)
