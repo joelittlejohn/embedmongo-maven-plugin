@@ -20,18 +20,41 @@ Usage
                 <goal>start</goal>
             </goals>
             <configuration>
-                <port>37017</port> <!-- optional, default 27017 -->
-                <randomPort>true</randomPort> <!-- optional, default is false, if true allocates a random port and overrides embedmongo.port -->
-                <version>2.0.4</version>  <!-- optional, default 2.2.1 -->
-                <databaseDirectory>/tmp/mongotest</databaseDirectory>  <!-- optional, default is a new dir in java.io.tmpdir -->
-                <logging>file</logging> <!-- optional (file|console|none), default console -->
-                <logFile>${project.build.directory}/myfile.log</logFile> <!-- optional, can be used when logging=file, default is ./embedmongo.log -->
-                <logFileEncoding>utf-8</logFileEncoding> <!-- optional, can be used when logging=file, default is utf-8 -->
-                <proxyHost>myproxy.company.com</proxyHost>  <!-- optional, default is none -->
-                <proxyPort>8080</proxyPort>  <!-- optional, default 80 -->
-                <proxyUser>joebloggs</proxyUser>  <!-- optional, default is none -->
-                <proxyPassword>pa55w0rd</proxyPassword>  <!-- optional, default is none -->
-                <bindIp>127.0.0.1</bindIp> <!-- optional, default is to listen on all interfaces -->
+                <port>37017</port>
+                <!-- optional, default 27017 -->
+
+                <randomPort>true</randomPort>
+                <!-- optional, default is false, if true allocates a random port and overrides embedmongo.port -->
+
+                <version>2.0.4</version>
+                <!-- optional, default 2.2.1 -->
+
+                <databaseDirectory>/tmp/mongotest</databaseDirectory>
+                <!-- optional, default is a new dir in java.io.tmpdir -->
+
+                <logging>file</logging>
+                <!-- optional (file|console|none), default console -->
+
+                <logFile>${project.build.directory}/myfile.log</logFile>
+                <!-- optional, can be used when logging=file, default is ./embedmongo.log -->
+
+                <logFileEncoding>utf-8</logFileEncoding>
+                <!-- optional, can be used when logging=file, default is utf-8 -->
+
+                <proxyHost>myproxy.company.com</proxyHost>
+                <!-- optional, default is none -->
+
+                <proxyPort>8080</proxyPort>
+                <!-- optional, default 80 -->
+
+                <proxyUser>joebloggs</proxyUser>
+                <!-- optional, default is none -->
+
+                <proxyPassword>pa55w0rd</proxyPassword>
+                <!-- optional, default is none -->
+
+                <bindIp>127.0.0.1</bindIp>
+                <!-- optional, default is to listen on all interfaces -->
             </configuration>
         </execution>
         <execution>
