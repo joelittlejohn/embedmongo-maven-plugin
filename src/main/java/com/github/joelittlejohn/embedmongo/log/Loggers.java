@@ -15,6 +15,7 @@
  */
 package com.github.joelittlejohn.embedmongo.log;
 
+import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.config.MongodProcessOutputConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.io.NamedOutputStreamProcessor;
@@ -35,7 +36,7 @@ public class Loggers {
     }
 
     public static ProcessOutput console() {
-        return MongodProcessOutputConfig.getDefaultInstance();
+        return MongodProcessOutputConfig.getDefaultInstance(Command.MongoD);
     }
 
     public static ProcessOutput none() {
