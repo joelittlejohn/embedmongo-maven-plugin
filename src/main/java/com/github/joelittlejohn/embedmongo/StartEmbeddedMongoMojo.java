@@ -42,19 +42,20 @@ import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.AbstractMongoConfig.Net;
-import de.flapdoodle.embed.mongo.config.AbstractMongoConfig.Storage;
-import de.flapdoodle.embed.mongo.config.AbstractMongoConfig.Timeout;
 import de.flapdoodle.embed.mongo.config.ArtifactStoreBuilder;
 import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
-import de.flapdoodle.embed.mongo.config.MongodConfig;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Storage;
+import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
 import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.distribution.Versions;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.config.store.IDownloadConfig;
 import de.flapdoodle.embed.process.distribution.Distribution;
-import de.flapdoodle.embed.process.distribution.GenericVersion;
 import de.flapdoodle.embed.process.distribution.IVersion;
 import de.flapdoodle.embed.process.exceptions.DistributionException;
 import de.flapdoodle.embed.process.runtime.ICommandLinePostProcessor;
@@ -230,28 +231,25 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
                 commandLinePostProcessor = new ICommandLinePostProcessor.Noop();
             }
 
-            IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
-                    .defaults(Command.MongoD)
-                    .processOutput(getOutputConfig())
-                    .artifactStore(getArtifactStore())
-                    .commandLinePostProcessor(commandLinePostProcessor)
-                    .build();
+            IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder().defaults(Command.MongoD).processOutput
+                (getOutputConfig()).artifactStore(getArtifactStore()).commandLinePostProcessor
+                (commandLinePostProcessor).build();
 
             if (randomPort) {
                 port = PortUtils.allocateRandomPort();
             }
             savePortToProjectProperties();
 
-            MongodConfig mongoConfig = new MongodConfig(getVersion(),
-                    new Net(bindIp, port, Network.localhostIsIPv6()),
-                    new Storage(getDataDirectory(), null, 0),
-                    new Timeout());
+            IMongodConfig config = new MongodConfigBuilder().version(getVersion()).net(new Net(bindIp, port,
+                Network.localhostIsIPv6())).replication(new Storage(getDataDirectory(), null, 0)).build();
 
-            executable = MongodStarter.getInstance(runtimeConfig).prepare(mongoConfig);
+            executable = MongodStarter.getInstance(runtimeConfig).prepare(config);
         } catch (UnknownHostException e) {
             throw new MojoExecutionException("Unable to determine if localhost is ipv6", e);
         } catch (DistributionException e) {
             throw new MojoExecutionException("Failed to download MongoDB distribution: " + e.withDistribution(), e);
+        } catch (IOException e) {
+            throw new MojoExecutionException("Unable to Config MongoDB: ", e);
         }
 
         try {
@@ -294,21 +292,17 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
             case NONE:
                 return Loggers.none();
             default:
-                throw new MojoFailureException("Unexpected logging style encountered: \"" + logging + "\" -> " + loggingStyle);
+                throw new MojoFailureException("Unexpected logging style encountered: \"" + logging + "\" -> " +
+                    loggingStyle);
         }
 
     }
 
-    private IArtifactStore getArtifactStore()
-    {
-        IDownloadConfig downloadConfig = new DownloadConfigBuilder()
-                .defaultsForCommand(Command.MongoD)
-                .downloadPath(downloadPath)
-                .build();
-        IArtifactStore artifactStore = new ArtifactStoreBuilder()
-                .defaults(Command.MongoD)
-                .download(downloadConfig)
-                .build();
+    private IArtifactStore getArtifactStore() {
+        IDownloadConfig downloadConfig = new DownloadConfigBuilder().defaultsForCommand(Command.MongoD).downloadPath
+            (downloadPath).build();
+        IArtifactStore artifactStore = new ArtifactStoreBuilder().defaults(Command.MongoD).download(downloadConfig)
+            .build();
         return artifactStore;
     }
 
@@ -341,18 +335,23 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         });
     }
 
-    private IVersion getVersion() {
+    private IFeatureAwareVersion getVersion() {
         String versionEnumName = this.version.toUpperCase().replaceAll("\\.", "_");
 
         if (versionEnumName.charAt(0) != 'V') {
             versionEnumName = "V" + versionEnumName;
         }
-
         try {
             return Version.valueOf(versionEnumName);
         } catch (IllegalArgumentException e) {
-            getLog().warn("Unrecognised MongoDB version '" + this.version + "', this might be a new version that we don't yet know about. Attemping download anyway...");
-            return new GenericVersion(this.version);
+            getLog().warn("Unrecognised MongoDB version '" + this.version + "', this might be a new version that we " +
+                "don't yet know about. Attemping download anyway...");
+            return Versions.withFeatures(new IVersion() {
+                @Override
+                public String asInDownloadPath() {
+                    return version;
+                }
+            });
         }
 
     }
