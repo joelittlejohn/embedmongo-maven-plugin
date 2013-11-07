@@ -74,11 +74,10 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     private static final String PACKAGE_NAME = StartEmbeddedMongoMojo.class.getPackage().getName();
     public static final String MONGOD_CONTEXT_PROPERTY_NAME = PACKAGE_NAME + ".mongod";
-
     /**
      * The port MongoDB should run on.
      *
-     * @parameter property="embedmongo.port" default-value="27017"
+     * @parameter expression="${embedmongo.port}" default-value="27017"
      * @since 0.1.0
      */
     private int port;
@@ -89,7 +88,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * random port chosen will be available in the Maven project property
      * {@code embedmongo.port}.
      *
-     * @parameter property="embedmongo.randomPort" default-value="false"
+     * @parameter expression="${embedmongo.randomPort}" default-value="false"
      * @since 0.1.8
      */
     private boolean randomPort;
@@ -97,7 +96,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     /**
      * The version of MongoDB to run e.g. 2.1.1, 1.6 v1.8.2, V2_0_4,
      *
-     * @parameter property="embedmongo.version" default-value="2.2.1"
+     * @parameter expression="${embedmongo.version}" default-value="2.2.1"
      * @since 0.1.0
      */
     private String version;
@@ -105,7 +104,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     /**
      * The location of a directory that will hold the MongoDB data files.
      *
-     * @parameter property="embedmongo.databaseDirectory"
+     * @parameter expression="${embedmongo.databaseDirectory}"
      * @since 0.1.0
      */
     private File databaseDirectory;
@@ -114,7 +113,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * An IP address for the MongoDB instance to be bound to during its
      * execution.
      *
-     * @parameter property="embedmongo.bindIp"
+     * @parameter expression="${embedmongo.bindIp}"
      * @since 0.1.4
      */
     private String bindIp;
@@ -122,7 +121,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     /**
      * A proxy hostname to be used when downloading MongoDB distributions.
      *
-     * @parameter property="embedmongo.proxyHost"
+     * @parameter expression="${embedmongo.proxyHost}"
      * @since 0.1.1
      */
     private String proxyHost;
@@ -130,7 +129,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     /**
      * A proxy port to be used when downloading MongoDB distributions.
      *
-     * @parameter property="embedmongo.proxyPort" default-value="80"
+     * @parameter expression="${embedmongo.proxyPort}" default-value="80"
      * @since 0.1.1
      */
     private int proxyPort;
@@ -140,27 +139,27 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * {@literal <ctrl-c>}). This option makes this goal similar in spirit to
      * something like jetty:run, useful for interactive debugging.
      *
-     * @parameter property="embedmongo.wait" default-value="false"
+     * @parameter expression="${embedmongo.wait}" default-value="false"
      * @since 0.1.2
      */
     private boolean wait;
 
     /**
-     * @parameter property="embedmongo.logging" default-value="console"
+     * @parameter expression="${embedmongo.logging}" default-value="console"
      * @since 0.1.3
      */
     private String logging;
 
     /**
-     * @parameter property="embedmongo.logFile"
-     * default-value="embedmongo.log"
+     * @parameter expression="${embedmongo.logFile}"
+     *            default-value="embedmongo.log"
      * @since 0.1.7
      */
     private String logFile;
 
     /**
-     * @parameter property="embedmongo.logFileEncoding"
-     * default-value="utf-8"
+     * @parameter expression="${embedmongo.logFileEncoding}"
+     *            default-value="utf-8"
      * @since 0.1.7
      */
     private String logFileEncoding;
@@ -168,8 +167,8 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     /**
      * The base URL to be used when downloading MongoDB
      *
-     * @parameter property="embedmongo.downloadPath"
-     * default-value="http://fastdl.mongodb.org/"
+     * @parameter expression="${embedmongo.downloadPath}"
+     *            default-value="http://fastdl.mongodb.org/"
      * @since 0.1.10
      */
     private String downloadPath;
@@ -177,7 +176,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     /**
      * The proxy user to be used when downloading MongoDB
      *
-     * @parameter property="embedmongo.proxyUser"
+     * @parameter expression="${embedmongo.proxyUser}"
      * @since 0.1.6
      */
     private String proxyUser;
@@ -185,7 +184,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     /**
      * The proxy password to be used when downloading MondoDB
      *
-     * @parameter property="embedmongo.proxyPassword"
+     * @parameter expression="${embedmongo.proxyPassword}"
      * @since 0.1.6
      */
     private String proxyPassword;
@@ -193,14 +192,14 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     /**
      * Should authorization be enabled for MongoDB
      *
-     * @parameter property="embedmongo.authEnabled" default-value="false"
+     * @parameter expression="${embedmongo.authEnabled}" default-value="false"
      */
     private boolean authEnabled;
 
     /**
      * The maven project.
      *
-     * @parameter property="project"
+     * @parameter expression="${project}"
      * @readonly
      */
     private MavenProject project;
