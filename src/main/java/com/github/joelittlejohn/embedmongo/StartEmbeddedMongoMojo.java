@@ -15,8 +15,6 @@
  */
 package com.github.joelittlejohn.embedmongo;
 
-import static java.util.Collections.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.Authenticator;
@@ -30,14 +28,8 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
-
 import com.github.joelittlejohn.embedmongo.log.Loggers;
 import com.github.joelittlejohn.embedmongo.log.Loggers.LoggingStyle;
-
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
@@ -61,24 +53,30 @@ import de.flapdoodle.embed.process.exceptions.DistributionException;
 import de.flapdoodle.embed.process.runtime.ICommandLinePostProcessor;
 import de.flapdoodle.embed.process.runtime.Network;
 import de.flapdoodle.embed.process.store.IArtifactStore;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
+
+import static java.util.Collections.singletonList;
 
 /**
  * When invoked, this goal starts an instance of mongo. The required binaries
  * are downloaded if no mongo release is found in <code>~/.embedmongo</code>.
- * 
+ *
  * @goal start
  * @phase pre-integration-test
  * @see <a
- *      href="http://github.com/flapdoodle-oss/embedmongo.flapdoodle.de">http://github.com/flapdoodle-oss/embedmongo.flapdoodle.de</a>
+ * href="http://github.com/flapdoodle-oss/embedmongo.flapdoodle.de">http://github.com/flapdoodle-oss/embedmongo
+ * .flapdoodle.de</a>
  */
 public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     private static final String PACKAGE_NAME = StartEmbeddedMongoMojo.class.getPackage().getName();
     public static final String MONGOD_CONTEXT_PROPERTY_NAME = PACKAGE_NAME + ".mongod";
-
     /**
      * The port MongoDB should run on.
-     * 
+     *
      * @parameter expression="${embedmongo.port}" default-value="27017"
      * @since 0.1.0
      */
@@ -89,7 +87,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * specified by {@code port}. If {@code randomPort} is {@code true}, the
      * random port chosen will be available in the Maven project property
      * {@code embedmongo.port}.
-     * 
+     *
      * @parameter expression="${embedmongo.randomPort}" default-value="false"
      * @since 0.1.8
      */
@@ -97,7 +95,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * The version of MongoDB to run e.g. 2.1.1, 1.6 v1.8.2, V2_0_4,
-     * 
+     *
      * @parameter expression="${embedmongo.version}" default-value="2.2.1"
      * @since 0.1.0
      */
@@ -105,7 +103,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * The location of a directory that will hold the MongoDB data files.
-     * 
+     *
      * @parameter expression="${embedmongo.databaseDirectory}"
      * @since 0.1.0
      */
@@ -114,7 +112,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     /**
      * An IP address for the MongoDB instance to be bound to during its
      * execution.
-     * 
+     *
      * @parameter expression="${embedmongo.bindIp}"
      * @since 0.1.4
      */
@@ -122,7 +120,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * A proxy hostname to be used when downloading MongoDB distributions.
-     * 
+     *
      * @parameter expression="${embedmongo.proxyHost}"
      * @since 0.1.1
      */
@@ -130,7 +128,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * A proxy port to be used when downloading MongoDB distributions.
-     * 
+     *
      * @parameter expression="${embedmongo.proxyPort}" default-value="80"
      * @since 0.1.1
      */
@@ -140,7 +138,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      * Block immediately and wait until MongoDB is explicitly stopped (eg:
      * {@literal <ctrl-c>}). This option makes this goal similar in spirit to
      * something like jetty:run, useful for interactive debugging.
-     * 
+     *
      * @parameter expression="${embedmongo.wait}" default-value="false"
      * @since 0.1.2
      */
@@ -168,7 +166,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * The base URL to be used when downloading MongoDB
-     * 
+     *
      * @parameter expression="${embedmongo.downloadPath}"
      *            default-value="http://fastdl.mongodb.org/"
      * @since 0.1.10
@@ -177,7 +175,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * The proxy user to be used when downloading MongoDB
-     * 
+     *
      * @parameter expression="${embedmongo.proxyUser}"
      * @since 0.1.6
      */
@@ -185,7 +183,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * The proxy password to be used when downloading MondoDB
-     * 
+     *
      * @parameter expression="${embedmongo.proxyPassword}"
      * @since 0.1.6
      */
@@ -193,14 +191,14 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
 
     /**
      * Should authorization be enabled for MongoDB
-     * 
+     *
      * @parameter expression="${embedmongo.authEnabled}" default-value="false"
      */
     private boolean authEnabled;
 
     /**
      * The maven project.
-     * 
+     *
      * @parameter expression="${project}"
      * @readonly
      */
