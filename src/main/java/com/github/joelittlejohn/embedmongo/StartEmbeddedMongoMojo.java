@@ -231,17 +231,22 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
                 commandLinePostProcessor = new ICommandLinePostProcessor.Noop();
             }
 
-            IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder().defaults(Command.MongoD).processOutput
-                (getOutputConfig()).artifactStore(getArtifactStore()).commandLinePostProcessor
-                (commandLinePostProcessor).build();
+            IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
+                    .defaults(Command.MongoD)
+                    .processOutput(getOutputConfig())
+                    .artifactStore(getArtifactStore())
+                    .commandLinePostProcessor(commandLinePostProcessor)
+                    .build();
 
             if (randomPort) {
                 port = PortUtils.allocateRandomPort();
             }
             savePortToProjectProperties();
 
-            IMongodConfig config = new MongodConfigBuilder().version(getVersion()).net(new Net(bindIp, port,
-                Network.localhostIsIPv6())).replication(new Storage(getDataDirectory(), null, 0)).build();
+            IMongodConfig config = new MongodConfigBuilder()
+                    .version(getVersion()).net(new Net(bindIp, port, Network.localhostIsIPv6()))
+                    .replication(new Storage(getDataDirectory(), null, 0))
+                    .build();
 
             executable = MongodStarter.getInstance(runtimeConfig).prepare(config);
         } catch (UnknownHostException e) {
@@ -293,17 +298,14 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
                 return Loggers.none();
             default:
                 throw new MojoFailureException("Unexpected logging style encountered: \"" + logging + "\" -> " +
-                    loggingStyle);
+                        loggingStyle);
         }
 
     }
 
     private IArtifactStore getArtifactStore() {
-        IDownloadConfig downloadConfig = new DownloadConfigBuilder().defaultsForCommand(Command.MongoD).downloadPath
-            (downloadPath).build();
-        IArtifactStore artifactStore = new ArtifactStoreBuilder().defaults(Command.MongoD).download(downloadConfig)
-            .build();
-        return artifactStore;
+        IDownloadConfig downloadConfig = new DownloadConfigBuilder().defaultsForCommand(Command.MongoD).downloadPath(downloadPath).build();
+        return new ArtifactStoreBuilder().defaults(Command.MongoD).download(downloadConfig).build();
     }
 
     private void addProxySelector() {
@@ -341,11 +343,11 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         if (versionEnumName.charAt(0) != 'V') {
             versionEnumName = "V" + versionEnumName;
         }
+
         try {
             return Version.valueOf(versionEnumName);
         } catch (IllegalArgumentException e) {
-            getLog().warn("Unrecognised MongoDB version '" + this.version + "', this might be a new version that we " +
-                "don't yet know about. Attemping download anyway...");
+            getLog().warn("Unrecognised MongoDB version '" + this.version + "', this might be a new version that we don't yet know about. Attemping download anyway...");
             return Versions.withFeatures(new IVersion() {
                 @Override
                 public String asInDownloadPath() {
