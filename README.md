@@ -12,7 +12,7 @@ Usage
 <plugin>
     <groupId>com.github.joelittlejohn.embedmongo</groupId>
     <artifactId>embedmongo-maven-plugin</artifactId>
-    <version>0.1.9</version>
+    <version>0.1.10</version>
     <executions>
         <execution>
             <id>start</id>
@@ -55,6 +55,9 @@ Usage
 
                 <bindIp>127.0.0.1</bindIp>
                 <!-- optional, default is to listen on all interfaces -->
+
+                <downloadPath>http://internal-mongo-repo/</downloadPath>
+                <!-- optional, default is http://fastdl.mongodb.org/ -->
             </configuration>
         </execution>
         <execution>

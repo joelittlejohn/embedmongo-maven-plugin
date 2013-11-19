@@ -7,3 +7,6 @@
 * rmarpozo <rmarpozo@gmail.com>
 * Matthew Adams <matthew@matthewadams.me>
 * Juraj Martinka <juraj.martinka@gooddata.com>
+* Alexander Dietrich <dietrich@adobe.com>
+* Brandon Chapman <bchapman@bridge2solutions.com>
+* Carlos Ortiz <carlos.ortiz@craftercms.org>

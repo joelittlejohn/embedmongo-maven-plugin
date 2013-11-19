@@ -1,5 +1,11 @@
 # embedmongo-maven-plugin Changelog
 
+## 0.1.10
+
+* Update to [embedmongo.flapdoodle.de](https://github.com/flapdoodle-oss/embedmongo.flapdoodle.de) 1.40 (thanks @cortiz)
+* Add support for MongoDB authorization (thanks @chapmbk)
+* Add `downloadPath` configuration option (thanks @dietrichatadobe)
+
 ## 0.1.8, 0.1.9
 
 * Add `randomPort` configuration option (thanks @jumarko)

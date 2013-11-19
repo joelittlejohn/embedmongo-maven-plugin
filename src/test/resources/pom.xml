@@ -23,7 +23,7 @@
                 <plugin>
                     <groupId>com.github.joelittlejohn.embedmongo</groupId>
                     <artifactId>embedmongo-maven-plugin</artifactId>
-                    <version>0.1.10-SNAPSHOT</version>
+                    <version>0.1.11-SNAPSHOT</version>
                 </plugin>
             </plugins>
         </pluginManagement>
