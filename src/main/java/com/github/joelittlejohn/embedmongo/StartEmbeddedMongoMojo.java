@@ -55,6 +55,8 @@ import de.flapdoodle.embed.mongo.distribution.Versions;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.config.store.IDownloadConfig;
+import de.flapdoodle.embed.process.config.store.ITimeoutConfig;
+import de.flapdoodle.embed.process.config.store.TimeoutConfigBuilder;
 import de.flapdoodle.embed.process.distribution.Distribution;
 import de.flapdoodle.embed.process.distribution.IVersion;
 import de.flapdoodle.embed.process.exceptions.DistributionException;
@@ -199,6 +201,16 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     private boolean authEnabled;
 
     /**
+     * The number of <b>seconds</b> to allow (when downloading MongoDB) for the
+     * TCP handshake to complete (connection timeout), and the number of seconds
+     * to allow the download to be idle for (no bytes received) before throwing
+     * a timeout exception (read timeout).
+     * 
+     * @parameter expression="${embedmongo.timeout}" default-value="60"
+     */
+    private int timeout = 60;
+
+    /**
      * The maven project.
      * 
      * @parameter expression="${project}"
@@ -304,7 +316,11 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     }
 
     private IArtifactStore getArtifactStore() {
-        IDownloadConfig downloadConfig = new DownloadConfigBuilder().defaultsForCommand(Command.MongoD).downloadPath(downloadPath).build();
+        IDownloadConfig downloadConfig = new DownloadConfigBuilder()
+                .defaultsForCommand(Command.MongoD)
+                .downloadPath(downloadPath)
+                .timeoutConfig(getTimeoutConfig()).build();
+
         return new ArtifactStoreBuilder().defaults(Command.MongoD).download(downloadConfig).build();
     }
 
@@ -364,6 +380,11 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         } else {
             return null;
         }
+    }
+
+    private ITimeoutConfig getTimeoutConfig() {
+        int timeoutMillis = (int) TimeUnit.SECONDS.toMillis(timeout);
+        return new TimeoutConfigBuilder().defaults().readTimeout(timeoutMillis).build();
     }
 
 }
