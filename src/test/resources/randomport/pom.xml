@@ -84,7 +84,7 @@
         <dependency>
             <groupId>com.github.joelittlejohn.embedmongo</groupId>
             <artifactId>embedmongo-maven-plugin</artifactId>
-            <version>0.1.9-SNAPSHOT</version>
+            <version>0.1.11-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
