@@ -1,5 +1,9 @@
 # embedmongo-maven-plugin Changelog
 
+## 0.1.11
+
+* Update to [embedmongo.flapdoodle.de](https://github.com/flapdoodle-oss/embedmongo.flapdoodle.de) 1.46.0 for performance improvements and latest versions.
+
 ## 0.1.10
 
 * Update to [embedmongo.flapdoodle.de](https://github.com/flapdoodle-oss/embedmongo.flapdoodle.de) 1.40 (thanks @cortiz)
