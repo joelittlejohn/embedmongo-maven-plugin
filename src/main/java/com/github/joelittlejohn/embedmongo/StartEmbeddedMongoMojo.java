@@ -206,10 +206,20 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      */
     private MavenProject project;
 
+    /**
+     * @parameter expression="${skipITs}" default-value="false"
+     */
+    private boolean skipITs;
+
     @Override
     @SuppressWarnings("unchecked")
     public void execute() throws MojoExecutionException, MojoFailureException {
 
+        if (skipITs) {
+            getLog().info("skipITs detected, not starting embedmongo");
+            return;
+        }
+        
         if (this.proxyHost != null && this.proxyHost.length() > 0) {
             this.addProxySelector();
         }
