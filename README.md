@@ -58,6 +58,9 @@ Usage
 
                 <downloadPath>http://internal-mongo-repo/</downloadPath>
                 <!-- optional, default is http://fastdl.mongodb.org/ -->
+
+                <skip>false</skip>
+                <!-- optional, skips this plugin entirely, use on the command line like -Dembedmongo.skip -->
             </configuration>
         </execution>
         <execution>
