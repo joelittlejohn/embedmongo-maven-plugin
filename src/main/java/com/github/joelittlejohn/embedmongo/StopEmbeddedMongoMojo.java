@@ -31,13 +31,13 @@ import de.flapdoodle.embed.mongo.MongodProcess;
 public class StopEmbeddedMongoMojo extends AbstractMojo {
 
     /**
-     * @parameter expression="${skipITs}" default-value="false"
+     * @parameter expression="${embedmongo.skip}" default-value="false"
      */
-    private boolean skipITs;
+    private boolean skip;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (skipITs) {
+        if (skip) {
             return;
         }
         

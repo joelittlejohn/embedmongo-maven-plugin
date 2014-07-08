@@ -207,16 +207,16 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     private MavenProject project;
 
     /**
-     * @parameter expression="${skipITs}" default-value="false"
+     * @parameter expression="${embedmongo.skip}" default-value="false"
      */
-    private boolean skipITs;
+    private boolean skip;
 
     @Override
     @SuppressWarnings("unchecked")
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        if (skipITs) {
-            getLog().info("skipITs detected, not starting embedmongo");
+        if (skip) {
+            getLog().debug("skip=true, not starting embedmongo");
             return;
         }
         
