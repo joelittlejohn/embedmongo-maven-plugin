@@ -8,6 +8,10 @@
 .project
 .settings
 
+# IntelliJ Idea files #
+*.iml
+.idea/
+
 # Maven derived files
 target
 *.class
