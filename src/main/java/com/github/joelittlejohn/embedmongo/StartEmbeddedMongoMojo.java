@@ -211,6 +211,20 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
      */
     private boolean skip;
 
+    /**
+     * The name of the database where data will be stored.
+     * @parameter
+     * @required
+     */
+    private String databaseName;
+
+    /**
+     * Folder that contains all scripts to execute.
+     * @parameter
+     * @required
+     */
+    private File initDirectory;
+
     @Override
     @SuppressWarnings("unchecked")
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -284,6 +298,8 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to start the mongod", e);
         }
+
+        new DataInitializer(initDirectory, port, databaseName, getLog()).insertData();
     }
 
     /**

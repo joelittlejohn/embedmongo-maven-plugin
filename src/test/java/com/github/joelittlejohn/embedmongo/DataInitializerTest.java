@@ -16,19 +16,31 @@
 package com.github.joelittlejohn.embedmongo;
 
 import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.junit.Ignore;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mockito.Matchers;
+import org.mockito.runners.MockitoJUnitRunner;
+import com.mongodb.CommandResult;
+import com.mongodb.DB;
+import com.mongodb.EmbedMongoDB;
 
-public class InitDataMongoMojoTest {
+@RunWith(MockitoJUnitRunner.class)
+public class DataInitializerTest {
 
     @Rule
     public TemporaryFolder createSchemaFolder = new TemporaryFolder();
@@ -36,37 +48,44 @@ public class InitDataMongoMojoTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
+    private final static int PORT = 27017;
+    private final static Log LOGGER = new SystemStreamLog();
     private File rootFolder;
     private File rootFolderWithError;
 
-    @Ignore("Need an instance of MongoDB to pass")
     @Test public void
     should_execute_instructions() throws MojoFailureException, MojoExecutionException, IOException {
         initFolder();
         try {
-            new InitDataMongoMojo().setDatabaseName("myDB").setDataFolder(rootFolder).execute();
+            new DataInitializerForTest(rootFolder, PORT, "myDB", LOGGER).insertData();
         } catch (Exception e) {
+            e.printStackTrace();
             fail("Should not fail!");
         }
     }
 
     @Test public void
-    should_fail_when_database_name_is_not_provided() throws MojoFailureException, MojoExecutionException {
+    should_fail_when_database_name_is_not_provided() throws MojoFailureException, MojoExecutionException, IOException {
+        initFolder();
+
         thrown.expect(MojoExecutionException.class);
         thrown.expectMessage("Database name is missing");
 
-        new InitDataMongoMojo().execute();
+        new DataInitializer(rootFolder, PORT, null, LOGGER).insertData();
     }
 
-    @Ignore("Need an instance of MongoDB to pass")
     @Test public void
     should_fail_to_execute_instruction_with_error() throws IOException, MojoFailureException, MojoExecutionException {
+        DB database = mock(DB.class);
         initFolderWithError();
+
+        CommandResult result = new EmbedMongoDB("myDB").notOkErrorResult("Error while executing instructions from file '" + rootFolderWithError.listFiles()[0].getName());
+        given(database.doEval(anyString(), Matchers.<Object>anyVararg())).willReturn(result);
 
         thrown.expect(MojoExecutionException.class);
         thrown.expectMessage("Error while executing instructions from file '" + rootFolderWithError.listFiles()[0].getName());
 
-        new InitDataMongoMojo().setDatabaseName("myDB").setDataFolder(rootFolderWithError).execute();
+        new DataInitializerForTest(rootFolderWithError, PORT, "myDB", LOGGER, database).insertData();
     }
 
     private void initFolder() throws IOException {
@@ -87,16 +106,35 @@ public class InitDataMongoMojoTest {
 
     private void initFolderWithError() throws IOException {
         File instructionsFile = createSchemaFolder.newFile();
-        BufferedWriter out = null;
+        BufferedWriter reader = null;
         try {
-            out = new BufferedWriter(new FileWriter(instructionsFile));
-            out.write("db.unknownInstruction();\n");
+            reader = new BufferedWriter(new FileWriter(instructionsFile));
+            reader.write("db.unknownInstruction();\n");
         } finally {
-            if (out != null) {
-                out.close();
+            if (reader != null) {
+                reader.close();
             }
         }
         rootFolderWithError = instructionsFile.getParentFile();
         rootFolderWithError.mkdir();
+    }
+
+    static class DataInitializerForTest extends DataInitializer {
+
+        private final DB database;
+
+        public DataInitializerForTest(File dataFolder, int port, String databaseName, Log logger) throws UnknownHostException {
+            this(dataFolder, port, databaseName, logger, new EmbedMongoDB("myDB"));
+        }
+
+        public DataInitializerForTest(File dataFolder, int port, String databaseName, Log logger, DB database) {
+            super(dataFolder, port, databaseName, logger);
+            this.database = database;
+        }
+
+        @Override
+        DB getConnectToMongoAndGetDatabase() throws MojoExecutionException {
+            return database;
+        }
     }
 }
