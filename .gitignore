@@ -17,3 +17,7 @@ target
 
 # Misc
 *.log
+
+# IntelliJ
+.idea/
+*.iml
