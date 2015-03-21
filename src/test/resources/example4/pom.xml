@@ -51,20 +51,20 @@
                                 <import>
                                     <database>app</database>
                                     <collection>some_zips</collection>
-                                    <file>src/main/test/mongo_data/tiny_zips.json</file>
+                                    <file>${basedir}/src/main/test/mongo_data/tiny_zips.json</file>
                                     <upsertOnImport>true</upsertOnImport>
                                     <dropOnImport>false</dropOnImport>
                                 </import>
                                 <import>
                                     <database>intensive_test</database>
                                     <collection>zips</collection>
-                                    <file>src/main/test/mongo_data/import_zips.json</file>
+                                    <file>${basedir}/src/main/test/mongo_data/import_zips.json</file>
                                     <dropOnImport>true</dropOnImport>
                                     <timeout>120000</timeout>
                                 </import>
                                 <import>
                                     <collection>test_zips</collection>
-                                    <file>src/main/test/mongo_data/tiny_zips.json</file>
+                                    <file>${basedir}/src/main/test/mongo_data/tiny_zips.json</file>
                                 </import>
                             </imports>
                         </configuration>
