@@ -43,7 +43,7 @@ public class InitDataMongoMojo extends AbstractMojo {
      * @parameter
      * @required
      */
-    private File dataFolder;
+    private File scriptsDirectory;
 
     /**
      * Optional. Specify the port only if you want have a different one from the default value.
@@ -59,15 +59,24 @@ public class InitDataMongoMojo extends AbstractMojo {
      */
     private String databaseName;
 
+    public InitDataMongoMojo() {
+    }
+
+    InitDataMongoMojo(File scriptsDirectory, int port, String databaseName) {
+        this.scriptsDirectory = scriptsDirectory;
+        this.port = port;
+        this.databaseName = databaseName;
+    }
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        DB db = getConnectToMongoAndGetDatabase();
+        DB db = connectToMongoAndGetDatabase();
 
-        if (dataFolder.isDirectory()) {
+        if (scriptsDirectory.isDirectory()) {
             Scanner scanner = null;
             StringBuilder instructions = new StringBuilder();
-            File[] files = dataFolder.listFiles();
-            getLog().info("Folder " + dataFolder.getAbsolutePath() + " contains " + files.length + " file(s):");
+            File[] files = scriptsDirectory.listFiles();
+            getLog().info("Folder " + scriptsDirectory.getAbsolutePath() + " contains " + files.length + " file(s):");
             for (File file : files) {
                 try {
                     scanner = new Scanner(file);
@@ -97,7 +106,7 @@ public class InitDataMongoMojo extends AbstractMojo {
         }
     }
 
-    private DB getConnectToMongoAndGetDatabase() throws MojoExecutionException {
+    DB connectToMongoAndGetDatabase() throws MojoExecutionException {
         if (databaseName == null || databaseName.trim().length() == 0) {
             throw new MojoExecutionException("Database name is missing");
         }
@@ -110,15 +119,5 @@ public class InitDataMongoMojo extends AbstractMojo {
         }
         getLog().info("Connected to MongoDB");
         return mongoClient.getDB(databaseName);
-    }
-
-    protected InitDataMongoMojo setDataFolder(File dataFolder) {
-        this.dataFolder = dataFolder;
-        return this;
-    }
-
-    protected InitDataMongoMojo setDatabaseName(String databaseName) {
-        this.databaseName = databaseName;
-        return this;
     }
 }
