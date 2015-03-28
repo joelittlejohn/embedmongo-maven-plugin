@@ -1,5 +1,5 @@
 /**
- * Copyright © 2012 Pablo Diaz
+ * Copyright © 2015 Pablo Diaz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,71 +18,45 @@ package com.github.joelittlejohn.embedmongo;
 import de.flapdoodle.embed.mongo.MongoImportExecutable;
 import de.flapdoodle.embed.mongo.MongoImportProcess;
 import de.flapdoodle.embed.mongo.MongoImportStarter;
-import de.flapdoodle.embed.mongo.MongodProcess;
-import de.flapdoodle.embed.mongo.config.*;
+import de.flapdoodle.embed.mongo.config.IMongoImportConfig;
+import de.flapdoodle.embed.mongo.config.MongoImportConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
+import de.flapdoodle.embed.mongo.config.Timeout;
 import de.flapdoodle.embed.process.runtime.Network;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @goal import
- * @phase pre-integration-test
- */
-public class ImportEmbeddedMongoMojo extends AbstractMojo {
-    /**
-     * @parameter
-     */
+@Mojo(name="mongo-import", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST)
+public class ImportEmbeddedMongoMojo extends AbstractEmbeddedMongoMojo {
+    @Parameter
     private ImportDataConfig[] imports;
 
-    /**
-     * @parameter expression="${embedmongo.defaultImportDatabase}"
-     */
+    @Parameter(property = "embedmongo.defaultImportDatabase")
     private String defaultImportDatabase;
 
-    /**
-     * @parameter expression="${embedmongo.import.wait}" default-value="false"
-     */
-    private Boolean wait;
-
-    /**
-     * @parameter expression="${embedmongo.parallel}" default-value="false"
-     */
+    @Parameter(property = "embedmongo.parallel", defaultValue = "false")
     private Boolean parallel;
-    /**
-     * @parameter expression="${embedmongo.skip}" default-value="false"
-     */
-    private boolean skip;
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        if (skip) {
-            return;
-        }
-
-        MongodProcess mongod = (MongodProcess)getPluginContext().get(StartEmbeddedMongoMojo.MONGOD_CONTEXT_PROPERTY_NAME);
-
-        if(mongod == null) {
-            throw new MojoExecutionException("Can't import without an EmbeddedMongoDB running");
-        }
-
+    public void executeEmbeddedMongo() throws MojoExecutionException, MojoFailureException {
         try {
-            sendImportScript(mongod);
+            sendImportScript();
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(), e);
         }
 
     }
 
-
-    private void sendImportScript(MongodProcess mongod) throws IOException, InterruptedException, MojoExecutionException {
+    private void sendImportScript() throws IOException, InterruptedException, MojoExecutionException {
         List<MongoImportProcess> pendingMongoProcess = new ArrayList<MongoImportProcess>();
 
         if(imports == null || imports.length == 0) {
@@ -90,8 +64,6 @@ public class ImportEmbeddedMongoMojo extends AbstractMojo {
 
             return;
         }
-
-        IMongodConfig config = mongod.getConfig();
 
         getLog().info("Default import database: " + defaultImportDatabase);
 
@@ -107,8 +79,8 @@ public class ImportEmbeddedMongoMojo extends AbstractMojo {
             }
 
             IMongoImportConfig mongoImportConfig = new MongoImportConfigBuilder()
-                    .version(config.version())
-                    .net(new Net(config.net().getPort(), Network.localhostIsIPv6()))
+                    .version(getVersion())
+                    .net(new Net(getPort(), Network.localhostIsIPv6()))
                     .db(database)
                     .collection(importData.getCollection())
                     .upsert(importData.getUpsertOnImport())
@@ -132,11 +104,6 @@ public class ImportEmbeddedMongoMojo extends AbstractMojo {
 
         for(MongoImportProcess importProcess: pendingMongoProcess){
             waitFor(importProcess);
-        }
-
-        if(wait) {
-            getLog().info("STARTED - MongoDB up and all imports done.");
-            mongod.waitFor();
         }
 
     }
