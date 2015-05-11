@@ -10,3 +10,4 @@
 * Alexander Dietrich <dietrich@adobe.com>
 * Brandon Chapman <bchapman@bridge2solutions.com>
 * Carlos Ortiz <carlos.ortiz@craftercms.org>
+* Pierre-Jean Vardanega <pierrejean.vardanega@gmail.com>
