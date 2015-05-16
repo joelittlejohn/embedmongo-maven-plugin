@@ -47,7 +47,7 @@ public class ImportEmbeddedMongoMojo extends AbstractEmbeddedMongoMojo {
     private Boolean parallel;
 
     @Override
-    public void executeEmbeddedMongo() throws MojoExecutionException, MojoFailureException {
+    public void executeStart() throws MojoExecutionException, MojoFailureException {
         try {
             sendImportScript();
         } catch (Exception e) {

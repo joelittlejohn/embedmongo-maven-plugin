@@ -1,5 +1,5 @@
 /**
- * Copyright © 2012 Joe Littlejohn
+ * Copyright © 2012 Pierre-Jean Vardanéga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,9 @@ import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * When invoked, this goal connects to an instance of mongo and execute some instructions
@@ -33,43 +36,37 @@ import com.mongodb.MongoException;
  *
  * You should use the same javascript syntax that you would use in the mongo client.
  *
- * @goal init-data
- * @phase pre-integration-test
  */
-public class InitDataMongoMojo extends AbstractMojo {
+@Mojo(name="init-data", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST)
+public class InitDataMongoMojo extends AbstractEmbeddedMongoMojo {
 
     /**
      * Folder that contains all scripts to execute.
      * @parameter
      * @required
      */
+    @Parameter(property = "scriptsDirectory", required = true)
     private File scriptsDirectory;
-
-    /**
-     * Optional. Specify the port only if you want have a different one from the default value.
-     * Default value is 27017.
-     * @parameter
-     */
-    private int port;
 
     /**
      * The name of the database where data will be stored.
      * @parameter
      * @required
      */
+    @Parameter(property = "databaseName", required = true)
     private String databaseName;
 
     public InitDataMongoMojo() {
     }
 
     InitDataMongoMojo(File scriptsDirectory, int port, String databaseName) {
+        super(port);
         this.scriptsDirectory = scriptsDirectory;
-        this.port = port;
         this.databaseName = databaseName;
     }
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void executeStart() throws MojoExecutionException, MojoFailureException {
         DB db = connectToMongoAndGetDatabase();
 
         if (scriptsDirectory.isDirectory()) {
@@ -113,7 +110,7 @@ public class InitDataMongoMojo extends AbstractMojo {
 
         MongoClient mongoClient;
         try {
-            mongoClient = new MongoClient("localhost", port == 0 ? 27017 : port);
+            mongoClient = new MongoClient("localhost", getPort());
         } catch (UnknownHostException e) {
             throw new MojoExecutionException("Unable to connect to mongo instance", e);
         }
