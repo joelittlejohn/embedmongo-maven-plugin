@@ -11,3 +11,4 @@
 * Brandon Chapman <bchapman@bridge2solutions.com>
 * Carlos Ortiz <carlos.ortiz@craftercms.org>
 * Pablo Diaz <padilo@gmail.com>
+* Pierre-Jean Vardanega <pierrejean.vardanega@gmail.com>
