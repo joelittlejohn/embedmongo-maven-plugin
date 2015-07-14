@@ -45,6 +45,7 @@ import de.flapdoodle.embed.mongo.MongodStarter;
 import de.flapdoodle.embed.mongo.config.ArtifactStoreBuilder;
 import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongoCmdOptionsBuilder;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
@@ -199,6 +200,13 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     private boolean authEnabled;
 
     /**
+     * Should journaling be enabled for MongoDB
+     *
+     * @parameter expression="${embedmongo.journal}" default-value="false"
+     */
+    private boolean journal;
+
+    /**
      * The maven project.
      * 
      * @parameter expression="${project}"
@@ -256,6 +264,9 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
             IMongodConfig config = new MongodConfigBuilder()
                     .version(getVersion()).net(new Net(bindIp, port, Network.localhostIsIPv6()))
                     .replication(new Storage(getDataDirectory(), null, 0))
+                    .cmdOptions(new MongoCmdOptionsBuilder()
+                    		.useNoJournal(!journal)
+                    		.build())
                     .build();
 
             executable = MongodStarter.getInstance(runtimeConfig).prepare(config);
