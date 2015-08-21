@@ -104,7 +104,7 @@ public abstract class AbstractEmbeddedMongoMojo extends AbstractMojo {
     private String proxyPassword;
 
 
-    @Component
+    @Parameter(defaultValue = "${project}", readonly = true)
     protected MavenProject project;
 
     public AbstractEmbeddedMongoMojo() {

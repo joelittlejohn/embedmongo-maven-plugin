@@ -48,6 +48,7 @@ import de.flapdoodle.embed.mongo.MongodStarter;
 import de.flapdoodle.embed.mongo.config.ArtifactStoreBuilder;
 import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongoCmdOptionsBuilder;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
@@ -77,6 +78,11 @@ public class StartEmbeddedMongoMojo extends AbstractEmbeddedMongoMojo {
 
     private static final String PACKAGE_NAME = StartEmbeddedMongoMojo.class.getPackage().getName();
     public static final String MONGOD_CONTEXT_PROPERTY_NAME = PACKAGE_NAME + ".mongod";
+
+    @Override
+    protected void savePortToProjectProperties(int port) {
+        super.savePortToProjectProperties(port);
+    }
 
     /**
      * The location of a directory that will hold the MongoDB data files.
@@ -134,6 +140,9 @@ public class StartEmbeddedMongoMojo extends AbstractEmbeddedMongoMojo {
         getLog().debug("skip=true, not starting embedmongo");
     }
 
+    @Parameter(property = "embedmongo.journal", defaultValue = "false")
+    private boolean journal;
+
     @Override
     @SuppressWarnings("unchecked")
     public void executeStart() throws MojoExecutionException, MojoFailureException {
@@ -176,6 +185,9 @@ public class StartEmbeddedMongoMojo extends AbstractEmbeddedMongoMojo {
             IMongodConfig config = new MongodConfigBuilder()
                     .version(getVersion()).net(new Net(bindIp, port, Network.localhostIsIPv6()))
                     .replication(new Storage(getDataDirectory(), null, 0))
+                    .cmdOptions(new MongoCmdOptionsBuilder()
+                    		.useNoJournal(!journal)
+                    		.build())
                     .build();
 
             executable = MongodStarter.getInstance(runtimeConfig).prepare(config);

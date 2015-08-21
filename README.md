@@ -12,7 +12,7 @@ Usage
 <plugin>
     <groupId>com.github.joelittlejohn.embedmongo</groupId>
     <artifactId>embedmongo-maven-plugin</artifactId>
-    <version>0.1.12</version>
+    <version>0.1.13</version>
     <executions>
         <execution>
             <id>start</id>
@@ -123,5 +123,3 @@ Notes
 * If you need to use a proxy to download MongoDB then you can either use `-Dhttp.proxyHost` and `-Dhttp.proxyPort` as additional Maven arguments (this will affect the entire build) or instruct the plugin to use a proxy when downloading Mongo by adding the `proxyHost` and `proxyPort` configuration properties.
 * If you're having trouble with Windows firewall rules, try setting the _bindIp_ config property to `127.0.0.1`.
 * If you'd like the start goal to start mongodb and wait, you can add `-Dembedmongo.wait` to your Maven command line arguments or -Dembedmongo.import.wait if you want the imports
-
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/92ea4148abefddaeadb849b65212bd0d "githalytics.com")](http://githalytics.com/joelittlejohn/embedmongo-maven-plugin)
