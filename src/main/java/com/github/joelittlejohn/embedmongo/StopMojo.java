@@ -15,7 +15,6 @@
  */
 package com.github.joelittlejohn.embedmongo;
 
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -24,16 +23,15 @@ import de.flapdoodle.embed.mongo.MongodProcess;
 /**
  * When invoked, this goal stops an instance of mojo that was started by this
  * plugin.
- * 
+ *
  * @goal stop
  * @phase post-integration-test
  */
-public class StopEmbeddedMongoMojo extends AbstractEmbeddedMongoMojo {
+public class StopMojo extends AbstractEmbeddedMongoMojo {
 
     @Override
     public void executeStart() throws MojoExecutionException, MojoFailureException {
-        MongodProcess mongod = (MongodProcess)getPluginContext().get(StartEmbeddedMongoMojo
-            .MONGOD_CONTEXT_PROPERTY_NAME);
+        MongodProcess mongod = (MongodProcess) getPluginContext().get(StartMojo.MONGOD_CONTEXT_PROPERTY_NAME);
 
         if (mongod != null) {
             mongod.stop();

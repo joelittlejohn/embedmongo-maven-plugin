@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mojo(name="mongo-import", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST)
-public class ImportEmbeddedMongoMojo extends AbstractEmbeddedMongoMojo {
+public class MongoImportMojo extends AbstractEmbeddedMongoMojo {
     @Parameter
     private ImportDataConfig[] imports;
 

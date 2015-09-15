@@ -19,26 +19,28 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
 import java.util.Scanner;
-import org.apache.maven.plugin.AbstractMojo;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import com.mongodb.CommandResult;
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import com.mongodb.CommandResult;
+import com.mongodb.DB;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+
 /**
- * When invoked, this goal connects to an instance of mongo and execute some instructions
- * to add data.
+ * When invoked, this goal connects to an instance of mongo and execute some
+ * instructions to add data.
  *
- * You should use the same javascript syntax that you would use in the mongo client.
+ * You should use the same javascript syntax that you would use in the mongo
+ * client.
  *
  */
-@Mojo(name="init-data", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST)
-public class InitDataMongoMojo extends AbstractEmbeddedMongoMojo {
+@Mojo(name = "mongo-scripts", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST)
+public class MongoScriptsMojo extends AbstractEmbeddedMongoMojo {
 
     /**
      * Folder that contains all scripts to execute.
@@ -52,10 +54,10 @@ public class InitDataMongoMojo extends AbstractEmbeddedMongoMojo {
     @Parameter(property = "databaseName", required = true)
     private String databaseName;
 
-    public InitDataMongoMojo() {
+    public MongoScriptsMojo() {
     }
 
-    InitDataMongoMojo(File scriptsDirectory, int port, String databaseName) {
+    MongoScriptsMojo(File scriptsDirectory, int port, String databaseName) {
         super(port);
         this.scriptsDirectory = scriptsDirectory;
         this.databaseName = databaseName;
@@ -70,7 +72,7 @@ public class InitDataMongoMojo extends AbstractEmbeddedMongoMojo {
             StringBuilder instructions = new StringBuilder();
             File[] files = scriptsDirectory.listFiles();
 
-            if(files == null){
+            if (files == null) {
                 getLog().info("Can't read scripts directory: " + scriptsDirectory.getAbsolutePath());
 
             } else {

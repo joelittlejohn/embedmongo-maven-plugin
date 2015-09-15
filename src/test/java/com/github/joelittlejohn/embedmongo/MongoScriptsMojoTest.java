@@ -38,7 +38,7 @@ import com.mongodb.DB;
 import com.mongodb.EmbedMongoDB;
 
 @RunWith(MockitoJUnitRunner.class)
-public class InitDataMongoMojoTest {
+public class MongoScriptsMojoTest {
 
     @Rule
     public TemporaryFolder createSchemaFolder = new TemporaryFolder();
@@ -54,7 +54,7 @@ public class InitDataMongoMojoTest {
     should_execute_instructions() throws MojoFailureException, MojoExecutionException, IOException {
         initFolder();
         try {
-            new InitDataMongoMojoForTest(rootFolder, PORT, "myDB").execute();
+            new MongoScriptsMojoForTest(rootFolder, PORT, "myDB").execute();
         } catch (Exception e) {
             e.printStackTrace();
             fail("Should not fail!");
@@ -68,7 +68,7 @@ public class InitDataMongoMojoTest {
         thrown.expect(MojoExecutionException.class);
         thrown.expectMessage("Database name is missing");
 
-        new InitDataMongoMojo(rootFolder, PORT, null).execute();
+        new MongoScriptsMojo(rootFolder, PORT, null).execute();
     }
 
     @Test public void
@@ -82,7 +82,7 @@ public class InitDataMongoMojoTest {
         thrown.expect(MojoExecutionException.class);
         thrown.expectMessage("Error while executing instructions from file '" + rootFolderWithError.listFiles()[0].getName());
 
-        new InitDataMongoMojoForTest(rootFolderWithError, PORT, "myDB", database).execute();
+        new MongoScriptsMojoForTest(rootFolderWithError, PORT, "myDB", database).execute();
     }
 
     private void initFolder() throws IOException {
@@ -116,15 +116,15 @@ public class InitDataMongoMojoTest {
         rootFolderWithError.mkdir();
     }
 
-    static class InitDataMongoMojoForTest extends InitDataMongoMojo {
+    static class MongoScriptsMojoForTest extends MongoScriptsMojo {
 
         private final DB database;
 
-        public InitDataMongoMojoForTest(File dataFolder, int port, String databaseName) throws UnknownHostException {
+        public MongoScriptsMojoForTest(File dataFolder, int port, String databaseName) throws UnknownHostException {
             this(dataFolder, port, databaseName, new EmbedMongoDB("myDB"));
         }
 
-        public InitDataMongoMojoForTest(File dataFolder, int port, String databaseName, DB database) {
+        public MongoScriptsMojoForTest(File dataFolder, int port, String databaseName, DB database) {
             super(dataFolder, port, databaseName);
             this.database = database;
         }

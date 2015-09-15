@@ -74,9 +74,9 @@ import de.flapdoodle.embed.process.store.IArtifactStore;
  *      href="http://github.com/flapdoodle-oss/embedmongo.flapdoodle.de">http://github.com/flapdoodle-oss/embedmongo.flapdoodle.de</a>
  */
 @Mojo(name="start", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST)
-public class StartEmbeddedMongoMojo extends AbstractEmbeddedMongoMojo {
+public class StartMojo extends AbstractEmbeddedMongoMojo {
 
-    private static final String PACKAGE_NAME = StartEmbeddedMongoMojo.class.getPackage().getName();
+    private static final String PACKAGE_NAME = StartMojo.class.getPackage().getName();
     public static final String MONGOD_CONTEXT_PROPERTY_NAME = PACKAGE_NAME + ".mongod";
 
     @Override
