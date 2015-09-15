@@ -64,9 +64,9 @@ Usage
             </configuration>
         </execution>
         <execution>
-            <id>import</id>
+            <id>mongo-import</id>
             <goals>
-                <goal>import</goal>
+                <goal>mongo-import</goal>
             </goals>
             <configuration>
                 <defaultImportDatabase>test</defaultImportDatabase>
