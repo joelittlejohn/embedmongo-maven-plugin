@@ -64,6 +64,46 @@ Usage
             </configuration>
         </execution>
         <execution>
+            <id>import</id>
+            <goals>
+                <goal>import</goal>
+            </goals>
+            <configuration>
+                <defaultImportDatabase>test</defaultImportDatabase>
+                <!-- optional, name of the default database to import data -->
+
+                <parallel>false</parallel>
+                <!-- optional, default false, if true it launches in parallel all imports -->
+
+                <wait>false</wait>
+                <!-- optional, default false, if true it will wait forever after it imports the data -->
+
+                <imports>
+                    <import>
+                        <database>my_db</database>
+                        <!-- optional, name of the database, if null it will fallback to defaultImportDatabase -->
+
+                        <collection>col</collection>
+                        <!-- required, name of the collection to import data -->
+
+                        <file>import_file.json</file>
+                        <!-- required, name of the json file to import -->
+
+                        <upsertOnImport>true</upsertOnImport>
+                        <!-- optional, default true, if true it will do an upsert on each document imported -->
+
+                        <dropOnImport>false</dropOnImport>
+                        <!-- optional, default true, if true it will do a drop the collection before starts to import -->
+
+                        <timeout>20000</timeout>
+                        <!-- optional, default 20000, it will fail if it takes more than this time importing a file (time in millis) -->
+
+                    </import>
+                    <!-- More imports are accepted and it will be executed in strictly order (if parallel is not set) -->
+                </imports>
+            </configuration>
+        </execution>
+        <execution>
             <id>stop</id>
             <goals>
                 <goal>stop</goal>
@@ -82,4 +122,4 @@ Notes
   If you're using Jenkins, you can also try the [Port Allocator Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Port+Allocator+Plugin).
 * If you need to use a proxy to download MongoDB then you can either use `-Dhttp.proxyHost` and `-Dhttp.proxyPort` as additional Maven arguments (this will affect the entire build) or instruct the plugin to use a proxy when downloading Mongo by adding the `proxyHost` and `proxyPort` configuration properties.
 * If you're having trouble with Windows firewall rules, try setting the _bindIp_ config property to `127.0.0.1`.
-* If you'd like the start goal to start mongodb and wait, you can add `-Dembedmongo.wait` to your Maven command line arguments
+* If you'd like the start goal to start mongodb and wait, you can add `-Dembedmongo.wait` to your Maven command line arguments or -Dembedmongo.import.wait if you want the imports

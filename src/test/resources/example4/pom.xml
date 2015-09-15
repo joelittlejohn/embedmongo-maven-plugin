@@ -10,9 +10,8 @@
     </parent>
 
     <groupId>com.github.joelittlejohn.embedmongo</groupId>
-    <artifactId>embedmongo-maven-plugin-random-port-test</artifactId>
+    <artifactId>embedmongo-maven-plugin-test4</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
 
     <url>https://github.com/joelittlejohn/embedmongo-maven-plugin</url>
 
@@ -37,11 +36,37 @@
                             <goal>start</goal>
                         </goals>
                         <configuration>
-                            <port>37017</port>
-                            <randomPort>true</randomPort>
-                            <databaseDirectory>/tmp/mongotest</databaseDirectory>
-                            <logging>console</logging>
                             <version>v2.2.0</version>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>mongo-import</id>
+                        <goals>
+                            <goal>mongo-import</goal>
+                        </goals>
+                        <configuration>
+                            <defaultImportDatabase>test</defaultImportDatabase>
+                            <parallel>false</parallel>
+                            <imports>
+                                <import>
+                                    <database>app</database>
+                                    <collection>some_zips</collection>
+                                    <file>${basedir}/src/main/test/mongo_data/tiny_zips.json</file>
+                                    <upsertOnImport>true</upsertOnImport>
+                                    <dropOnImport>false</dropOnImport>
+                                </import>
+                                <import>
+                                    <database>intensive_test</database>
+                                    <collection>zips</collection>
+                                    <file>${basedir}/src/main/test/mongo_data/import_zips.json</file>
+                                    <dropOnImport>true</dropOnImport>
+                                    <timeout>120000</timeout>
+                                </import>
+                                <import>
+                                    <collection>test_zips</collection>
+                                    <file>${basedir}/src/main/test/mongo_data/tiny_zips.json</file>
+                                </import>
+                            </imports>
                         </configuration>
                     </execution>
                     <execution>
@@ -52,35 +77,10 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--Runs integration tests and verifies their results-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.12.4</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <mongo.port>${embedmongo.port}</mongo.port>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit-dep</artifactId>
-            <version>4.10</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
 </project>

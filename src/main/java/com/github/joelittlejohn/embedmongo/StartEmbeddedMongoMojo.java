@@ -33,6 +33,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import com.github.joelittlejohn.embedmongo.log.Loggers;
@@ -67,168 +70,84 @@ import de.flapdoodle.embed.process.store.IArtifactStore;
  * When invoked, this goal starts an instance of mongo. The required binaries
  * are downloaded if no mongo release is found in <code>~/.embedmongo</code>.
  * 
- * @goal start
- * @phase pre-integration-test
  * @see <a
  *      href="http://github.com/flapdoodle-oss/embedmongo.flapdoodle.de">http://github.com/flapdoodle-oss/embedmongo.flapdoodle.de</a>
  */
-public class StartEmbeddedMongoMojo extends AbstractMojo {
+@Mojo(name="start", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST)
+public class StartEmbeddedMongoMojo extends AbstractEmbeddedMongoMojo {
 
     private static final String PACKAGE_NAME = StartEmbeddedMongoMojo.class.getPackage().getName();
     public static final String MONGOD_CONTEXT_PROPERTY_NAME = PACKAGE_NAME + ".mongod";
 
-    /**
-     * The port MongoDB should run on.
-     * 
-     * @parameter expression="${embedmongo.port}" default-value="27017"
-     * @since 0.1.0
-     */
-    private int port;
-
-    /**
-     * Whether a random free port should be used for MongoDB instead of the one
-     * specified by {@code port}. If {@code randomPort} is {@code true}, the
-     * random port chosen will be available in the Maven project property
-     * {@code embedmongo.port}.
-     * 
-     * @parameter expression="${embedmongo.randomPort}" default-value="false"
-     * @since 0.1.8
-     */
-    private boolean randomPort;
-
-    /**
-     * The version of MongoDB to run e.g. 2.1.1, 1.6 v1.8.2, V2_0_4,
-     * 
-     * @parameter expression="${embedmongo.version}" default-value="2.2.1"
-     * @since 0.1.0
-     */
-    private String version;
+    @Override
+    protected void savePortToProjectProperties(int port) {
+        super.savePortToProjectProperties(port);
+    }
 
     /**
      * The location of a directory that will hold the MongoDB data files.
      * 
-     * @parameter expression="${embedmongo.databaseDirectory}"
      * @since 0.1.0
      */
+    @Parameter(property = "embedmongo.databaseDirectory")
     private File databaseDirectory;
 
     /**
      * An IP address for the MongoDB instance to be bound to during its
      * execution.
      * 
-     * @parameter expression="${embedmongo.bindIp}"
      * @since 0.1.4
      */
+    @Parameter(property = "embedmongo.bindIp")
     private String bindIp;
 
     /**
-     * A proxy hostname to be used when downloading MongoDB distributions.
-     * 
-     * @parameter expression="${embedmongo.proxyHost}"
-     * @since 0.1.1
-     */
-    private String proxyHost;
-
-    /**
-     * A proxy port to be used when downloading MongoDB distributions.
-     * 
-     * @parameter expression="${embedmongo.proxyPort}" default-value="80"
-     * @since 0.1.1
-     */
-    private int proxyPort;
-
-    /**
-     * Block immediately and wait until MongoDB is explicitly stopped (eg:
-     * {@literal <ctrl-c>}). This option makes this goal similar in spirit to
-     * something like jetty:run, useful for interactive debugging.
-     * 
-     * @parameter expression="${embedmongo.wait}" default-value="false"
-     * @since 0.1.2
-     */
-    private boolean wait;
-
-    /**
-     * @parameter expression="${embedmongo.logging}" default-value="console"
      * @since 0.1.3
      */
+    @Parameter(property = "embedmongo.logging")
     private String logging;
 
     /**
-     * @parameter expression="${embedmongo.logFile}"
-     *            default-value="embedmongo.log"
      * @since 0.1.7
      */
+    @Parameter(property = "embedmongo.logFile", defaultValue = "embedmongo.log")
     private String logFile;
 
     /**
-     * @parameter expression="${embedmongo.logFileEncoding}"
-     *            default-value="utf-8"
      * @since 0.1.7
      */
+    @Parameter(property = "embedmongo.logFileEncoding", defaultValue = "utf-8")
     private String logFileEncoding;
 
     /**
      * The base URL to be used when downloading MongoDB
      * 
-     * @parameter expression="${embedmongo.downloadPath}"
-     *            default-value="http://fastdl.mongodb.org/"
      * @since 0.1.10
      */
+    @Parameter(property = "embedmongo.downloadPath", defaultValue = "http://fastdl.mongodb.org/")
     private String downloadPath;
 
-    /**
-     * The proxy user to be used when downloading MongoDB
-     * 
-     * @parameter expression="${embedmongo.proxyUser}"
-     * @since 0.1.6
-     */
-    private String proxyUser;
-
-    /**
-     * The proxy password to be used when downloading MondoDB
-     * 
-     * @parameter expression="${embedmongo.proxyPassword}"
-     * @since 0.1.6
-     */
-    private String proxyPassword;
 
     /**
      * Should authorization be enabled for MongoDB
      * 
-     * @parameter expression="${embedmongo.authEnabled}" default-value="false"
      */
+    @Parameter(property = "embedmongo.authEnabled", defaultValue = "false")
     private boolean authEnabled;
 
-    /**
-     * Should journaling be enabled for MongoDB
-     *
-     * @parameter expression="${embedmongo.journal}" default-value="false"
-     */
+    @Override
+    protected void onSkip() {
+        getLog().debug("skip=true, not starting embedmongo");
+    }
+
+    @Parameter(property = "embedmongo.journal", defaultValue = "false")
     private boolean journal;
-
-    /**
-     * The maven project.
-     * 
-     * @parameter expression="${project}"
-     * @readonly
-     */
-    private MavenProject project;
-
-    /**
-     * @parameter expression="${embedmongo.skip}" default-value="false"
-     */
-    private boolean skip;
 
     @Override
     @SuppressWarnings("unchecked")
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void executeStart() throws MojoExecutionException, MojoFailureException {
 
-        if (skip) {
-            getLog().debug("skip=true, not starting embedmongo");
-            return;
-        }
-        
-        if (this.proxyHost != null && this.proxyHost.length() > 0) {
+        if (hasProxyConfigured()) {
             this.addProxySelector();
         }
 
@@ -256,10 +175,12 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
                     .commandLinePostProcessor(commandLinePostProcessor)
                     .build();
 
-            if (randomPort) {
+            int port = getPort();
+
+            if (isRandomPort()) {
                 port = PortUtils.allocateRandomPort();
             }
-            savePortToProjectProperties();
+            savePortToProjectProperties(port);
 
             IMongodConfig config = new MongodConfigBuilder()
                     .version(getVersion()).net(new Net(bindIp, port, Network.localhostIsIPv6()))
@@ -281,7 +202,7 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         try {
             MongodProcess mongod = executable.start();
 
-            if (wait) {
+            if (isWait()) {
                 while (true) {
                     try {
                         TimeUnit.MINUTES.sleep(5);
@@ -297,14 +218,6 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
         }
     }
 
-    /**
-     * Saves port to the {@link MavenProject#getProperties()} (with the property
-     * name {@code embedmongo.port}) to allow others (plugins, tests, etc) to
-     * find the randomly allocated port.
-     */
-    private void savePortToProjectProperties() {
-        project.getProperties().put("embedmongo.port", String.valueOf(port));
-    }
 
     private ProcessOutput getOutputConfig() throws MojoFailureException {
 
@@ -332,6 +245,11 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
     private void addProxySelector() {
 
         // Add authenticator with proxyUser and proxyPassword
+        final String proxyUser = getProxyUser();
+        final String proxyPassword = getProxyPassword();
+        final String proxyHost = getProxyHost();
+        final int proxyPort = getProxyPort();
+
         if (proxyUser != null && proxyPassword != null) {
             Authenticator.setDefault(new Authenticator() {
                 @Override
@@ -356,27 +274,6 @@ public class StartEmbeddedMongoMojo extends AbstractMojo {
             public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
             }
         });
-    }
-
-    private IFeatureAwareVersion getVersion() {
-        String versionEnumName = this.version.toUpperCase().replaceAll("\\.", "_");
-
-        if (versionEnumName.charAt(0) != 'V') {
-            versionEnumName = "V" + versionEnumName;
-        }
-
-        try {
-            return Version.valueOf(versionEnumName);
-        } catch (IllegalArgumentException e) {
-            getLog().warn("Unrecognised MongoDB version '" + this.version + "', this might be a new version that we don't yet know about. Attemping download anyway...");
-            return Versions.withFeatures(new IVersion() {
-                @Override
-                public String asInDownloadPath() {
-                    return version;
-                }
-            });
-        }
-
     }
 
     private String getDataDirectory() {
