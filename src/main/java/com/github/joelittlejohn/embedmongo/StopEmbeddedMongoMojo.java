@@ -28,19 +28,10 @@ import de.flapdoodle.embed.mongo.MongodProcess;
  * @goal stop
  * @phase post-integration-test
  */
-public class StopEmbeddedMongoMojo extends AbstractMojo {
-
-    /**
-     * @parameter expression="${embedmongo.skip}" default-value="false"
-     */
-    private boolean skip;
+public class StopEmbeddedMongoMojo extends AbstractEmbeddedMongoMojo {
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        if (skip) {
-            return;
-        }
-        
+    public void executeStart() throws MojoExecutionException, MojoFailureException {
         MongodProcess mongod = (MongodProcess)getPluginContext().get(StartEmbeddedMongoMojo
             .MONGOD_CONTEXT_PROPERTY_NAME);
 

@@ -14,6 +14,7 @@
         <module>example1</module>
         <module>example2</module>
         <module>example3</module>
+        <module>example4</module>
         <module>randomport</module>
     </modules>
 
@@ -23,7 +24,7 @@
                 <plugin>
                     <groupId>com.github.joelittlejohn.embedmongo</groupId>
                     <artifactId>embedmongo-maven-plugin</artifactId>
-                    <version>0.1.11-SNAPSHOT</version>
+                    <version>0.1.13-SNAPSHOT</version>
                 </plugin>
             </plugins>
         </pluginManagement>
