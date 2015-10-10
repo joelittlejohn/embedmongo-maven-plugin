@@ -104,7 +104,7 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
     /**
      * @since 0.1.3
      */
-    @Parameter(property = "embedmongo.logging")
+    @Parameter(property = "embedmongo.logging", defaultValue = "console")
     private String logging;
 
     /**
