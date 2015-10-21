@@ -1,5 +1,18 @@
 # embedmongo-maven-plugin Changelog
 
+## 0.2.0
+
+* Add two new goals for initializing data, `mongo-import` and `mongo-scripts`
+* Add short goal prefix `mongo` for simpler command line invocation (e.g. `mvn mongo:start`)
+
+## 0.1.13
+
+* Add option to enable journaling
+
+## 0.1.12
+
+* Allow skipping with `-Dembedmongo.skip` 
+
 ## 0.1.11
 
 * Update to [embedmongo.flapdoodle.de](https://github.com/flapdoodle-oss/embedmongo.flapdoodle.de) 1.46.0 for performance improvements and latest versions.
