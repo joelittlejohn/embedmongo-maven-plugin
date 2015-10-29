@@ -9,11 +9,10 @@ Usage
 -----
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
 <plugin>
   <groupId>com.github.joelittlejohn.embedmongo</groupId>
   <artifactId>embedmongo-maven-plugin</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
   <executions>
     <execution>
       <id>start</id>
