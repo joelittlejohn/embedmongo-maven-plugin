@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 package com.github.joelittlejohn.embedmongo;
+import static org.apache.commons.lang3.StringUtils.*;
+
+import java.io.File;
 
 public class ImportDataConfig {
     private String database;
@@ -41,7 +44,11 @@ public class ImportDataConfig {
     }
 
     public String getCollection() {
-        return collection;
+        if (isBlank(collection)) {
+            return substringBeforeLast(substringAfterLast(this.file, File.separator), ".");
+        } else {        
+            return collection;
+        }
     }
 
     public String getFile() {

@@ -74,7 +74,7 @@ public class MongoImportMojo extends AbstractEmbeddedMongoMojo {
             verify(importData);
             String database = importData.getDatabase();
 
-            if(StringUtils.isBlank(database)){
+            if(StringUtils.isBlank(database)) {
                 database = defaultImportDatabase;
             }
 
@@ -126,12 +126,6 @@ public class MongoImportMojo extends AbstractEmbeddedMongoMojo {
                 "\t\t<file>[my file]</file>\n" +
                 "...");
         Validate.isTrue(StringUtils.isNotBlank(defaultImportDatabase) || StringUtils.isNotBlank(config.getDatabase()), "Database is required you can either define a defaultImportDatabase or a <database> on import tags");
-        Validate.notBlank(config.getCollection(), "Collection is required\n\n" +
-                "<imports>\n" +
-                "\t<import>\n" +
-                "\t\t<collection>[my file]</collection>\n" +
-                "...");
-
     }
 
 }

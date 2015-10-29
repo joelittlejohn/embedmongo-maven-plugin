@@ -63,7 +63,6 @@
                                     <timeout>120000</timeout>
                                 </import>
                                 <import>
-                                    <collection>test_zips</collection>
                                     <file>${basedir}/src/main/test/mongo_data/tiny_zips.json</file>
                                 </import>
                             </imports>
