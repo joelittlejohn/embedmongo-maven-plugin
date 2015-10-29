@@ -1,4 +1,4 @@
-embedmongo-maven-plugin [![Build Status](https://travis-ci.org/joelittlejohn/embedmongo-maven-plugin.png)](https://travis-ci.org/joelittlejohn/embedmongo-maven-plugin)
+embedmongo-maven-plugin [![Build Status](https://travis-ci.org/joelittlejohn/embedmongo-maven-plugin.png)](https://travis-ci.org/joelittlejohn/embedmongo-maven-plugin) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.joelittlejohn.embedmongo/embedmongo-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.joelittlejohn.embedmongo/embedmongo-maven-plugin)
 =======================
 
 Maven plugin wrapper for the [flapdoodle.de embedded MongoDB API](http://github.com/flapdoodle-oss/embedmongo.flapdoodle.de).
