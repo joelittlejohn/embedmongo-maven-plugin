@@ -15,10 +15,6 @@
  */
 package com.github.joelittlejohn.embedmongo;
 
-import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.distribution.Versions;
-import de.flapdoodle.embed.process.distribution.IVersion;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -26,6 +22,11 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+
+import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.distribution.Versions;
+import de.flapdoodle.embed.process.distribution.IVersion;
 
 /**
  * Created by pablo on 28/03/15.
@@ -103,12 +104,10 @@ public abstract class AbstractEmbeddedMongoMojo extends AbstractMojo {
     @Parameter(property = "embedmongo.proxyPassword")
     private String proxyPassword;
 
-
-    @Parameter(defaultValue = "${project}", readonly = true)
+    @Component
     protected MavenProject project;
 
     public AbstractEmbeddedMongoMojo() {
-
     }
 
     AbstractEmbeddedMongoMojo(int port) {
@@ -177,31 +176,12 @@ public abstract class AbstractEmbeddedMongoMojo extends AbstractMojo {
         return randomPort;
     }
 
-    public String getProxyHost() {
-        return proxyHost;
-    }
-
-    public int getProxyPort() {
-        return proxyPort;
-    }
-
     public boolean isWait() {
         return wait;
-    }
-
-    public String getProxyUser() {
-        return proxyUser;
-    }
-
-    public String getProxyPassword() {
-        return proxyPassword;
     }
 
     public MavenProject getProject() {
         return project;
     }
 
-    public boolean hasProxyConfigured() {
-        return this.proxyHost != null && this.proxyHost.length() > 0;
-    }
 }

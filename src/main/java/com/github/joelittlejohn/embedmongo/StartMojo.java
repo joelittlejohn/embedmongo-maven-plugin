@@ -30,13 +30,15 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.maven.plugin.AbstractMojo;
+import static org.apache.commons.lang3.StringUtils.*;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.settings.Settings;
 
 import com.github.joelittlejohn.embedmongo.log.Loggers;
 import com.github.joelittlejohn.embedmongo.log.Loggers.LoggingStyle;
@@ -53,14 +55,10 @@ import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Storage;
-import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.mongo.distribution.Versions;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.config.store.IDownloadConfig;
 import de.flapdoodle.embed.process.distribution.Distribution;
-import de.flapdoodle.embed.process.distribution.IVersion;
 import de.flapdoodle.embed.process.exceptions.DistributionException;
 import de.flapdoodle.embed.process.runtime.ICommandLinePostProcessor;
 import de.flapdoodle.embed.process.runtime.Network;
@@ -127,28 +125,30 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
     @Parameter(property = "embedmongo.downloadPath", defaultValue = "http://fastdl.mongodb.org/")
     private String downloadPath;
 
-
     /**
      * Should authorization be enabled for MongoDB
-     * 
      */
     @Parameter(property = "embedmongo.authEnabled", defaultValue = "false")
     private boolean authEnabled;
+
+    @Parameter(property = "embedmongo.journal", defaultValue = "false")
+    private boolean journal;
+
+    @Component
+    protected Settings settings;
 
     @Override
     protected void onSkip() {
         getLog().debug("skip=true, not starting embedmongo");
     }
 
-    @Parameter(property = "embedmongo.journal", defaultValue = "false")
-    private boolean journal;
-
     @Override
     @SuppressWarnings("unchecked")
     public void executeStart() throws MojoExecutionException, MojoFailureException {
 
-        if (hasProxyConfigured()) {
-            this.addProxySelector();
+        org.apache.maven.settings.Proxy proxy = getConfiguredProxy(settings);
+        if (proxy != null) {
+            this.addProxySelector(proxy);
         }
 
         MongodExecutable executable;
@@ -242,14 +242,16 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
         return new ArtifactStoreBuilder().defaults(Command.MongoD).download(downloadConfig).build();
     }
 
-    private void addProxySelector() {
+    private void addProxySelector(final org.apache.maven.settings.Proxy proxy) {
 
-        // Add authenticator with proxyUser and proxyPassword
-        final String proxyUser = getProxyUser();
-        final String proxyPassword = getProxyPassword();
-        final String proxyHost = getProxyHost();
-        final int proxyPort = getProxyPort();
+        final String proxyUser = proxy.getUsername();
+        final String proxyPassword = proxy.getPassword();
+        final String proxyHost = proxy.getHost();
+        final int proxyPort = proxy.getPort();
+        final String downloadHost = URI.create(downloadPath).getHost();
 
+        getLog().debug("Using proxy: " + proxyHost + ":" + proxyPort);
+        
         if (proxyUser != null && proxyPassword != null) {
             Authenticator.setDefault(new Authenticator() {
                 @Override
@@ -263,7 +265,7 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
         ProxySelector.setDefault(new ProxySelector() {
             @Override
             public List<Proxy> select(URI uri) {
-                if (uri.getHost().equals("fastdl.mongodb.org")) {
+                if (uri.getHost().equals(downloadHost)) {
                     return singletonList(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)));
                 } else {
                     return defaultProxySelector.select(uri);
@@ -274,6 +276,25 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
             public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
             }
         });
+    }
+
+    @SuppressWarnings("unchecked")
+    public org.apache.maven.settings.Proxy getConfiguredProxy(Settings settings) {
+        URI downloadUri = URI.create(downloadPath);
+        final String downloadHost = downloadUri.getHost();
+        final String downloadProto = downloadUri.getScheme();
+
+        if (settings.getProxies() != null) {
+            for (org.apache.maven.settings.Proxy proxy : (List<org.apache.maven.settings.Proxy>) settings.getProxies()) {
+                if (proxy.isActive() 
+                        && equalsIgnoreCase(proxy.getProtocol(), downloadProto) 
+                        && !contains(proxy.getNonProxyHosts(), downloadHost)) {
+                    return proxy;
+                }
+            }
+        }
+        
+        return null;
     }
 
     private String getDataDirectory() {
