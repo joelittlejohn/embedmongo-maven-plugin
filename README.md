@@ -9,120 +9,111 @@ Usage
 -----
 
 ```xml
+<?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-    <groupId>com.github.joelittlejohn.embedmongo</groupId>
-    <artifactId>embedmongo-maven-plugin</artifactId>
-    <version>0.2.0</version>
-    <executions>
-        <execution>
-            <id>start</id>
-            <goals>
-                <goal>start</goal>
-            </goals>
-            <configuration>
-                <port>37017</port>
-                <!-- optional, default 27017 -->
-
-                <randomPort>true</randomPort>
-                <!-- optional, default is false, if true allocates a random port and overrides embedmongo.port -->
-
-                <version>2.0.4</version>
-                <!-- optional, default 2.2.1 -->
-
-                <databaseDirectory>/tmp/mongotest</databaseDirectory>
-                <!-- optional, default is a new dir in java.io.tmpdir -->
-
-                <logging>file</logging>
-                <!-- optional (file|console|none), default console -->
-
-                <logFile>${project.build.directory}/myfile.log</logFile>
-                <!-- optional, can be used when logging=file, default is ./embedmongo.log -->
-
-                <logFileEncoding>utf-8</logFileEncoding>
-                <!-- optional, can be used when logging=file, default is utf-8 -->
-
-                <proxyHost>myproxy.company.com</proxyHost>
-                <!-- optional, default is none -->
-
-                <proxyPort>8080</proxyPort>
-                <!-- optional, default 80 -->
-
-                <proxyUser>joebloggs</proxyUser>
-                <!-- optional, default is none -->
-
-                <proxyPassword>pa55w0rd</proxyPassword>
-                <!-- optional, default is none -->
-
-                <bindIp>127.0.0.1</bindIp>
-                <!-- optional, default is to listen on all interfaces -->
-
-                <downloadPath>http://internal-mongo-repo/</downloadPath>
-                <!-- optional, default is http://fastdl.mongodb.org/ -->
-
-                <skip>false</skip>
-                <!-- optional, skips this plugin entirely, use on the command line like -Dembedmongo.skip -->
-            </configuration>
-        </execution>
-        <execution>
-            <id>mongo-scripts</id>
-            <goals>
-                <goal>mongo-scripts</goal>
-            </goals>
-            <configuration>
-                <scriptsDirectory>...</scriptsDirectory>
-                <!-- a directory containing scripts to run -->
-
-                <databaseName>mydb</databaseName>
-                <!-- the name of the database to run scripts against -->
-            </configuration>
-        </execution>
-        <execution>
-            <id>mongo-import</id>
-            <goals>
-                <goal>mongo-import</goal>
-            </goals>
-            <configuration>
-                <defaultImportDatabase>test</defaultImportDatabase>
-                <!-- optional, name of the default database to import data -->
-
-                <parallel>false</parallel>
-                <!-- optional, default false, if true it launches in parallel all imports -->
-
-                <wait>false</wait>
-                <!-- optional, default false, if true it will wait forever after it imports the data -->
-
-                <imports>
-                    <import>
-                        <database>my_db</database>
-                        <!-- optional, name of the database, if null it will fallback to defaultImportDatabase -->
-
-                        <collection>col</collection>
-                        <!-- required, name of the collection to import data -->
-
-                        <file>import_file.json</file>
-                        <!-- required, name of the json file to import -->
-
-                        <upsertOnImport>true</upsertOnImport>
-                        <!-- optional, default true, if true it will do an upsert on each document imported -->
-
-                        <dropOnImport>false</dropOnImport>
-                        <!-- optional, default true, if true it will do a drop the collection before starts to import -->
-
-                        <timeout>20000</timeout>
-                        <!-- optional, default 20000, it will fail if it takes more than this time importing a file (time in millis) -->
-
-                    </import>
-                    <!-- More imports are accepted and it will be executed in strictly order (if parallel is not set) -->
-                </imports>
-            </configuration>
-        </execution>
-        <execution>
-            <id>stop</id>
-            <goals>
-                <goal>stop</goal>
-            </goals>
-        </execution>
-    </executions>
+  <groupId>com.github.joelittlejohn.embedmongo</groupId>
+  <artifactId>embedmongo-maven-plugin</artifactId>
+  <version>0.2.0</version>
+  <executions>
+    <execution>
+      <id>start</id>
+      <goals>
+        <goal>start</goal>
+      </goals>
+      <configuration>
+        <port>37017</port>
+        <!-- optional, default 27017 -->
+        
+        <randomPort>true</randomPort>
+        <!-- optional, default is false, if true allocates a random port and overrides embedmongo.port -->
+        
+        <version>2.0.4</version>
+        <!-- optional, default 2.2.1 -->
+        
+        <databaseDirectory>/tmp/mongotest</databaseDirectory>
+        <!-- optional, default is a new dir in java.io.tmpdir -->
+        
+        <logging>file</logging>
+        <!-- optional (file|console|none), default console -->
+        
+        <logFile>${project.build.directory}/myfile.log</logFile>
+        <!-- optional, can be used when logging=file, default is ./embedmongo.log -->
+        
+        <logFileEncoding>utf-8</logFileEncoding>
+        <!-- optional, can be used when logging=file, default is utf-8 -->
+        
+        <bindIp>127.0.0.1</bindIp>
+        <!-- optional, default is to listen on all interfaces -->
+        
+        <downloadPath>http://internal-mongo-repo/</downloadPath>
+        <!-- optional, default is http://fastdl.mongodb.org/ -->
+        
+        <skip>false</skip>
+        <!-- optional, skips this plugin entirely, use on the command line like -Dembedmongo.skip -->
+        
+      </configuration>
+    </execution>
+    <execution>
+      <id>mongo-scripts</id>
+      <goals>
+        <goal>mongo-scripts</goal>
+      </goals>
+      <configuration>
+        <scriptsDirectory>...</scriptsDirectory>
+        <!-- a directory containing scripts to run -->
+        
+        <databaseName>mydb</databaseName>
+        <!-- the name of the database to run scripts against -->
+        
+      </configuration>
+    </execution>
+    <execution>
+      <id>mongo-import</id>
+      <goals>
+        <goal>mongo-import</goal>
+      </goals>
+      <configuration>
+        <defaultImportDatabase>test</defaultImportDatabase>
+        <!-- optional, name of the default database to import data -->
+        
+        <parallel>false</parallel>
+        <!-- optional, default false, if true it launches in parallel all imports -->
+        
+        <wait>false</wait>
+        <!-- optional, default false, if true it will wait forever after it imports the data -->
+        
+        <imports>
+          <import>
+            <database>my_db</database>
+            <!-- optional, name of the database, if null it will fallback to defaultImportDatabase -->
+            
+            <collection>col</collection>
+            <!-- optional, collection to import data into (will use <file> to derive this otherwise) -->
+            
+            <file>import_file.json</file>
+            <!-- required, name of the json file to import -->
+            
+            <upsertOnImport>true</upsertOnImport>
+            <!-- optional, default true, if true it will do an upsert on each document imported -->
+            
+            <dropOnImport>false</dropOnImport>
+            <!-- optional, default true, if true it will do a drop the collection before starts to import -->
+            
+            <timeout>20000</timeout>
+            <!-- optional, default 20000, it will fail if it takes more than this time importing a file (time in millis) -->
+            
+          </import>
+          <!-- More imports are accepted and it will be executed in strictly order (if parallel is not set) -->
+        </imports>
+      </configuration>
+    </execution>
+    <execution>
+      <id>stop</id>
+      <goals>
+        <goal>stop</goal>
+      </goals>
+    </execution>
+  </executions>
 </plugin>
 ```
 
