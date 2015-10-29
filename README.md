@@ -64,6 +64,19 @@ Usage
             </configuration>
         </execution>
         <execution>
+            <id>mongo-scripts</id>
+            <goals>
+                <goal>mongo-scripts</goal>
+            </goals>
+            <configuration>
+                <scriptsDirectory>...</scriptsDirectory>
+                <!-- a directory containing scripts to run -->
+
+                <databaseName>mydb</databaseName>
+                <!-- the name of the database to run scripts against -->
+            </configuration>
+        </execution>
+        <execution>
             <id>mongo-import</id>
             <goals>
                 <goal>mongo-import</goal>
