@@ -1,5 +1,9 @@
 # embedmongo-maven-plugin Changelog
 
+## 0.3.0
+* Use maven proxy settings and remove custom proxy parameters
+* Allow collection to be omitted in mongo-import (use filename) 
+
 ## 0.2.0
 
 * Add two new goals for initializing data, `mongo-import` and `mongo-scripts`
