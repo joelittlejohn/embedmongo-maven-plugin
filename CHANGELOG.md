@@ -2,7 +2,7 @@
 
 ## 0.3.0
 * Use maven proxy settings and remove custom proxy parameters
-* Allow collection to be omitted in mongo-import (use filename) 
+* Allow collection to be omitted in `mongo-import` goal config (use filename to derive collection name) 
 
 ## 0.2.0
 
