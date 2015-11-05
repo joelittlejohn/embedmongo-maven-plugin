@@ -79,29 +79,31 @@ public class MongoScriptsMojo extends AbstractEmbeddedMongoMojo {
                 getLog().info("Folder " + scriptsDirectory.getAbsolutePath() + " contains " + files.length + " file(s):");
 
                 for (File file : files) {
-                    try {
-                        scanner = new Scanner(file);
-                        while (scanner.hasNextLine()) {
-                            instructions.append(scanner.nextLine()).append("\n");
+                    if (file.isFile()) {
+                        try {
+                            scanner = new Scanner(file);
+                            while (scanner.hasNextLine()) {
+                                instructions.append(scanner.nextLine()).append("\n");
+                            }
+                        } catch (FileNotFoundException e) {
+                            throw new MojoExecutionException("Unable to find file with name '" + file.getName() + "'", e);
+                        } finally {
+                            if (scanner != null) {
+                                scanner.close();
+                            }
                         }
-                    } catch (FileNotFoundException e) {
-                        throw new MojoExecutionException("Unable to find file with name '" + file.getName() + "'", e);
-                    } finally {
-                        if (scanner != null) {
-                            scanner.close();
+                        CommandResult result;
+                        try {
+                            result = db.doEval("(function() {" + instructions.toString() + "})();", new Object[0]);
+                        } catch (MongoException e) {
+                            throw new MojoExecutionException("Unable to execute file with name '" + file.getName() + "'", e);
                         }
+                        if (!result.ok()) {
+                            getLog().error("- file " + file.getName() + " parsed with error: " + result.getErrorMessage());
+                            throw new MojoExecutionException("Error while executing instructions from file '" + file.getName() + "': " + result.getErrorMessage(), result.getException());
+                        }
+                        getLog().info("- file " + file.getName() + " parsed successfully");
                     }
-                    CommandResult result;
-                    try {
-                        result = db.doEval("(function() {" + instructions.toString() + "})();", new Object[0]);
-                    } catch (MongoException e) {
-                        throw new MojoExecutionException("Unable to execute file with name '" + file.getName() + "'", e);
-                    }
-                    if (!result.ok()) {
-                        getLog().error("- file " + file.getName() + " parsed with error: " + result.getErrorMessage());
-                        throw new MojoExecutionException("Error while executing instructions from file '" + file.getName() + "': " + result.getErrorMessage(), result.getException());
-                    }
-                    getLog().info("- file " + file.getName() + " parsed successfully");
                 }
             }
             getLog().info("Data initialized with success");
