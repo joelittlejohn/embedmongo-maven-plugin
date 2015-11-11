@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 package com.github.joelittlejohn.embedmongo;
-import static org.apache.commons.lang3.StringUtils.*;
 
 import java.io.File;
+import java.io.FileFilter;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
+import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 
 public class ImportDataConfig {
     private String database;
@@ -25,6 +28,8 @@ public class ImportDataConfig {
     private Boolean dropOnImport = true;
     private Boolean upsertOnImport = true;
     private long timeout = 200000;
+    
+    private File[] collectionFiles;
 
     public ImportDataConfig() {
     }
@@ -39,20 +44,36 @@ public class ImportDataConfig {
     }
 
     public String getDatabase() {
-
         return database;
     }
-
+    
     public String getCollection() {
-        if (isBlank(collection)) {
-            return substringBeforeLast(substringAfterLast(this.file, File.separator), ".");
-        } else {        
+        if (isBlankCollectionName(collection)) {
+            return getCollectionNameFromFilePath(this.file);
+        } else {
             return collection;
+        }
+    }
+    
+    public String[] getCollections() {
+        if (!isMultiCollectionEnabled()) return new String[]{getCollection()};
+        else {
+            String[] listCollectionFilesPath = listCollectionFilesPath();
+            String[] fileNames = new String[listCollectionFilesPath.length];
+            for (int i = 0; i < listCollectionFilesPath.length; i++) {
+                fileNames[i] = getCollectionNameFromFilePath(listCollectionFilesPath[i]);
+            }
+            return fileNames;
         }
     }
 
     public String getFile() {
         return file;
+    }
+    
+    public String[] getFiles() {
+        if (!isMultiCollectionEnabled()) return new String[]{getFile()};
+        else                             return listCollectionFilesPath();
     }
 
     public Boolean getDropOnImport() {
@@ -77,5 +98,47 @@ public class ImportDataConfig {
                 ", upsertOnImport=" + upsertOnImport +
                 ", timeout=" + timeout +
                 '}';
+    }
+    
+    //
+    //
+    //
+    
+    private boolean isMultiCollectionEnabled() {
+        return isBlankCollectionName(this.collection) && isMultiCollectionFile(this.file);
+    }
+    
+    private boolean isBlankCollectionName(String collectionName) {
+        return isBlank(collectionName);
+    }
+    
+    private boolean isMultiCollectionFile(String file) {
+        return (new File(file).isDirectory());
+    }
+    
+    private String getCollectionNameFromFilePath(String file) {
+        return substringBeforeLast(substringAfterLast(file, File.separator), ".");
+    }
+
+    private File[] listCollectionFiles() {
+        if (collectionFiles == null) {
+            collectionFiles = new File(file).listFiles(new FileFilter() {
+                                @Override
+                                public boolean accept(File file) {
+                                    // a directory ending with .json ? do not think so but ...
+                                    return file.isFile() && file.getPath().endsWith(".json") || file.getPath().endsWith(".JSON");
+                                }
+                            });
+        }
+        return collectionFiles;
+    }
+
+    private String[] listCollectionFilesPath() {
+        File[] files = listCollectionFiles();
+        String[] filesPath = new String[files.length];
+        for (int i = 0; i < files.length; i++) {
+            filesPath[i] = files[i].getAbsolutePath();
+        }
+        return filesPath;
     }
 }

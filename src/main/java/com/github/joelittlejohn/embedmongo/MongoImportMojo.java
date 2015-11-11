@@ -23,6 +23,9 @@ import de.flapdoodle.embed.mongo.config.MongoImportConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.Timeout;
 import de.flapdoodle.embed.process.runtime.Network;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -30,10 +33,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Mojo(name="mongo-import", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST)
 public class MongoImportMojo extends AbstractEmbeddedMongoMojo {
@@ -78,28 +77,33 @@ public class MongoImportMojo extends AbstractEmbeddedMongoMojo {
                 database = defaultImportDatabase;
             }
 
-            IMongoImportConfig mongoImportConfig = new MongoImportConfigBuilder()
-                    .version(getVersion())
-                    .net(new Net(getPort(), Network.localhostIsIPv6()))
-                    .db(database)
-                    .collection(importData.getCollection())
-                    .upsert(importData.getUpsertOnImport())
-                    .dropCollection(importData.getDropOnImport())
-                    .importFile(importData.getFile())
-                    .jsonArray(true)
-                    .timeout(new Timeout(importData.getTimeout()))
-                    .build();
-
-            MongoImportExecutable mongoImport = MongoImportStarter.getDefaultInstance().prepare(mongoImportConfig);
-
-            MongoImportProcess importProcess = mongoImport.start();
-
-            if(parallel){
-                pendingMongoProcess.add(importProcess);
-            }else{
-                waitFor(importProcess);
+            String[] collections = importData.getCollections();
+            String[] files       = importData.getFiles();
+            if (collections.length != files.length) {
+                throw new RuntimeException("ERROR -- ImportDataConfig from a directory file BUT collections.length != files.length");
             }
+            for (int i = 0; i < files.length; i++) {
+                IMongoImportConfig mongoImportConfig = new MongoImportConfigBuilder()
+                        .version(getVersion())
+                        .net(new Net(getPort(), Network.localhostIsIPv6()))
+                        .db(database)
+                        .collection(collections[i])
+                        .upsert(importData.getUpsertOnImport())
+                        .dropCollection(importData.getDropOnImport())
+                        .importFile(files[i])
+                        .jsonArray(true)
+                        .timeout(new Timeout(importData.getTimeout()))
+                        .build();
 
+                MongoImportExecutable mongoImport = MongoImportStarter.getDefaultInstance().prepare(mongoImportConfig);
+                MongoImportProcess importProcess = mongoImport.start();
+
+                if(parallel){
+                    pendingMongoProcess.add(importProcess);
+                }else{
+                    waitFor(importProcess);
+                }
+            }
         }
 
         for(MongoImportProcess importProcess: pendingMongoProcess){
