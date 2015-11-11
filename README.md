@@ -58,6 +58,9 @@ Usage
         <goal>mongo-scripts</goal>
       </goals>
       <configuration>
+        <version>2.0.4</version>
+        <!-- optional, default 2.2.1 -->
+
         <scriptsDirectory>...</scriptsDirectory>
         <!-- a directory containing scripts to run -->
         
@@ -72,6 +75,9 @@ Usage
         <goal>mongo-import</goal>
       </goals>
       <configuration>
+        <version>2.0.4</version>
+        <!-- optional, default 2.2.1 -->
+
         <defaultImportDatabase>test</defaultImportDatabase>
         <!-- optional, name of the default database to import data -->
         
