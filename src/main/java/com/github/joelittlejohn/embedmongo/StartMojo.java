@@ -61,7 +61,6 @@ import de.flapdoodle.embed.process.config.store.IDownloadConfig;
 import de.flapdoodle.embed.process.distribution.Distribution;
 import de.flapdoodle.embed.process.exceptions.DistributionException;
 import de.flapdoodle.embed.process.runtime.ICommandLinePostProcessor;
-import de.flapdoodle.embed.process.runtime.Network;
 import de.flapdoodle.embed.process.store.IArtifactStore;
 
 /**
@@ -178,12 +177,12 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
             int port = getPort();
 
             if (isRandomPort()) {
-                port = PortUtils.allocateRandomPort();
+                port = NetworkUtils.allocateRandomPort();
             }
             savePortToProjectProperties(port);
 
             IMongodConfig config = new MongodConfigBuilder()
-                    .version(getVersion()).net(new Net(bindIp, port, Network.localhostIsIPv6()))
+                    .version(getVersion()).net(new Net(bindIp, port, NetworkUtils.localhostIsIPv6()))
                     .replication(new Storage(getDataDirectory(), null, 0))
                     .cmdOptions(new MongoCmdOptionsBuilder()
                     		.useNoJournal(!journal)
@@ -191,8 +190,6 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
                     .build();
 
             executable = MongodStarter.getInstance(runtimeConfig).prepare(config);
-        } catch (UnknownHostException e) {
-            throw new MojoExecutionException("Unable to determine if localhost is ipv6", e);
         } catch (DistributionException e) {
             throw new MojoExecutionException("Failed to download MongoDB distribution: " + e.withDistribution(), e);
         } catch (IOException e) {
