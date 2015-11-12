@@ -22,7 +22,6 @@ import de.flapdoodle.embed.mongo.config.IMongoImportConfig;
 import de.flapdoodle.embed.mongo.config.MongoImportConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.Timeout;
-import de.flapdoodle.embed.process.runtime.Network;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -80,7 +79,7 @@ public class MongoImportMojo extends AbstractEmbeddedMongoMojo {
 
             IMongoImportConfig mongoImportConfig = new MongoImportConfigBuilder()
                     .version(getVersion())
-                    .net(new Net(getPort(), Network.localhostIsIPv6()))
+                    .net(new Net(getPort(), NetworkUtils.localhostIsIPv6()))
                     .db(database)
                     .collection(importData.getCollection())
                     .upsert(importData.getUpsertOnImport())

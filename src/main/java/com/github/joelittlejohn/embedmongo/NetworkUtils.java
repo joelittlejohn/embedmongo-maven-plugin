@@ -15,12 +15,15 @@
  */
 package com.github.joelittlejohn.embedmongo;
 
+import de.flapdoodle.embed.process.runtime.Network;
+
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.UnknownHostException;
 
-public final class PortUtils {
+public final class NetworkUtils {
 
-    private PortUtils() {
+    private NetworkUtils() {
     }
 
     public static int allocateRandomPort() {
@@ -34,4 +37,11 @@ public final class PortUtils {
         }
     }
 
+    public static boolean localhostIsIPv6() {
+        try {
+            return Network.localhostIsIPv6();
+        } catch (UnknownHostException e) {
+            return false;
+        }
+    }
 }

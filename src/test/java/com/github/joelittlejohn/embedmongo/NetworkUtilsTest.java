@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Test;
 
-public class PortUtilsTest {
+public class NetworkUtilsTest {
 
     private final ScheduledExecutorService testPooledExecutor = Executors.newScheduledThreadPool(20);
 
@@ -37,7 +37,7 @@ public class PortUtilsTest {
 
     /**
      * This test executes method
-     * {@link com.github.joelittlejohn.embedmongo.PortUtils#allocateRandomPort()}
+     * {@link NetworkUtils#allocateRandomPort()}
      * many times concurrently to make sure that port allocation works correctly
      * under stress.
      */
@@ -51,7 +51,7 @@ public class PortUtilsTest {
             public void run() {
                 int port = -1;
                 try {
-                    port = PortUtils.allocateRandomPort();
+                    port = NetworkUtils.allocateRandomPort();
                     new ServerSocket(port);
                     // port has been bound successfully
                 } catch (IOException e) {
