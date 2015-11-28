@@ -24,8 +24,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class NetworkUtilsTest {
 
     private final ScheduledExecutorService testPooledExecutor = Executors.newScheduledThreadPool(20);
