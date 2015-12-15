@@ -63,22 +63,6 @@ public abstract class AbstractEmbeddedMongoMojo extends AbstractMojo {
     private String version;
 
     /**
-     * A proxy hostname to be used when downloading MongoDB distributions.
-     *
-     * @since 0.1.1
-     */
-    @Parameter(property = "embedmongo.proxyHost")
-    private String proxyHost;
-
-    /**
-     * A proxy port to be used when downloading MongoDB distributions.
-     *
-     * @since 0.1.1
-     */
-    @Parameter(property = "embedmongo.proxyPort", defaultValue = "80")
-    private int proxyPort;
-
-    /**
      * Block immediately and wait until MongoDB is explicitly stopped (eg:
      * {@literal <ctrl-c>}). This option makes this goal similar in spirit to
      * something like jetty:run, useful for interactive debugging.
@@ -87,22 +71,6 @@ public abstract class AbstractEmbeddedMongoMojo extends AbstractMojo {
      */
     @Parameter(property = "embedmongo.wait", defaultValue = "false")
     private boolean wait;
-
-    /**
-     * The proxy user to be used when downloading MongoDB
-     *
-     * @since 0.1.6
-     */
-    @Parameter(property = "embedmongo.proxyUser")
-    private String proxyUser;
-
-    /**
-     * The proxy password to be used when downloading MondoDB
-     *
-     * @since 0.1.6
-     */
-    @Parameter(property = "embedmongo.proxyPassword")
-    private String proxyPassword;
 
     @Component
     protected MavenProject project;

@@ -26,7 +26,6 @@ import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.SocketAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -275,7 +274,6 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
         });
     }
 
-    @SuppressWarnings("unchecked")
     public org.apache.maven.settings.Proxy getConfiguredProxy(Settings settings) {
         URI downloadUri = URI.create(downloadPath);
         final String downloadHost = downloadUri.getHost();
