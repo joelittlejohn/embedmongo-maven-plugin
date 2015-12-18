@@ -15,21 +15,13 @@
  */
 package com.github.joelittlejohn.embedmongo;
 
-import static java.util.Collections.*;
+import static org.apache.commons.lang3.StringUtils.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.PasswordAuthentication;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.SocketAddress;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import static org.apache.commons.lang3.StringUtils.*;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -56,7 +48,10 @@ import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
+import de.flapdoodle.embed.process.config.store.HttpProxyFactory;
 import de.flapdoodle.embed.process.config.store.IDownloadConfig;
+import de.flapdoodle.embed.process.config.store.IProxyFactory;
+import de.flapdoodle.embed.process.config.store.NoProxyFactory;
 import de.flapdoodle.embed.process.distribution.Distribution;
 import de.flapdoodle.embed.process.exceptions.DistributionException;
 import de.flapdoodle.embed.process.runtime.ICommandLinePostProcessor;
@@ -144,11 +139,6 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
     @SuppressWarnings("unchecked")
     public void executeStart() throws MojoExecutionException, MojoFailureException {
 
-        org.apache.maven.settings.Proxy proxy = getConfiguredProxy(settings);
-        if (proxy != null) {
-            this.addProxySelector(proxy);
-        }
-
         MongodExecutable executable;
         try {
 
@@ -234,47 +224,11 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
     }
 
     private IArtifactStore getArtifactStore() {
-        IDownloadConfig downloadConfig = new DownloadConfigBuilder().defaultsForCommand(Command.MongoD).downloadPath(downloadPath).build();
+        IDownloadConfig downloadConfig = new DownloadConfigBuilder().defaultsForCommand(Command.MongoD).proxyFactory(getProxyFactory(settings)).downloadPath(downloadPath).build();
         return new ArtifactStoreBuilder().defaults(Command.MongoD).download(downloadConfig).build();
     }
 
-    private void addProxySelector(final org.apache.maven.settings.Proxy proxy) {
-
-        final String proxyUser = proxy.getUsername();
-        final String proxyPassword = proxy.getPassword();
-        final String proxyHost = proxy.getHost();
-        final int proxyPort = proxy.getPort();
-        final String downloadHost = URI.create(downloadPath).getHost();
-
-        getLog().debug("Using proxy: " + proxyHost + ":" + proxyPort);
-        
-        if (proxyUser != null && proxyPassword != null) {
-            Authenticator.setDefault(new Authenticator() {
-                @Override
-                public PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
-                }
-            });
-        }
-
-        final ProxySelector defaultProxySelector = ProxySelector.getDefault();
-        ProxySelector.setDefault(new ProxySelector() {
-            @Override
-            public List<Proxy> select(URI uri) {
-                if (uri.getHost().equals(downloadHost)) {
-                    return singletonList(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)));
-                } else {
-                    return defaultProxySelector.select(uri);
-                }
-            }
-
-            @Override
-            public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
-            }
-        });
-    }
-
-    public org.apache.maven.settings.Proxy getConfiguredProxy(Settings settings) {
+    public IProxyFactory getProxyFactory(Settings settings) {
         URI downloadUri = URI.create(downloadPath);
         final String downloadHost = downloadUri.getHost();
         final String downloadProto = downloadUri.getScheme();
@@ -284,12 +238,12 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
                 if (proxy.isActive() 
                         && equalsIgnoreCase(proxy.getProtocol(), downloadProto) 
                         && !contains(proxy.getNonProxyHosts(), downloadHost)) {
-                    return proxy;
+                    return new HttpProxyFactory(proxy.getHost(), proxy.getPort());
                 }
             }
         }
         
-        return null;
+        return new NoProxyFactory();
     }
 
     private String getDataDirectory() {
