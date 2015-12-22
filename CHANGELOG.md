@@ -1,7 +1,18 @@
 # embedmongo-maven-plugin Changelog
 
+## 0.3.3
+* Fix use of Maven proxy settings on Java 8
+
+## 0.3.2
+* Remove unused proxy params from goal configuration
+
+## 0.3.1
+* Only try to execute _files_ as scripts, not directories (`mongo-scripts` goal)
+* Handle exception on Network.localhostIsIPv6() more gracefully
+* Ensure `-Dembedmondo.skip` applies to `stop` goal
+
 ## 0.3.0
-* Use maven proxy settings and remove custom proxy parameters
+* Use Maven proxy settings and remove custom proxy parameters
 * Allow collection to be omitted in `mongo-import` goal config (use filename to derive collection name) 
 
 ## 0.2.0
