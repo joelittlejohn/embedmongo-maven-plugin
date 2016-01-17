@@ -18,6 +18,7 @@ package com.github.joelittlejohn.embedmongo;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.Scanner;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -49,6 +50,14 @@ public class MongoScriptsMojo extends AbstractEmbeddedMongoMojo {
     private File scriptsDirectory;
 
     /**
+     * Charset encoding to use for parsing the scripts.  If not assigned,
+     * the underlying encoding of the operating system will be
+     * used
+     */
+    @Parameter(property = "scriptCharsetEncoding", required = false)
+    private String scriptCharsetEncoding;
+
+    /**
      * The name of the database where data will be stored.
      */
     @Parameter(property = "databaseName", required = true)
@@ -57,10 +66,11 @@ public class MongoScriptsMojo extends AbstractEmbeddedMongoMojo {
     public MongoScriptsMojo() {
     }
 
-    MongoScriptsMojo(File scriptsDirectory, int port, String databaseName) {
+    MongoScriptsMojo(File scriptsDirectory, int port, String databaseName, String scriptCharsetEncoding) {
         super(port);
         this.scriptsDirectory = scriptsDirectory;
         this.databaseName = databaseName;
+        this.scriptCharsetEncoding = scriptCharsetEncoding;
     }
 
     @Override
@@ -81,12 +91,22 @@ public class MongoScriptsMojo extends AbstractEmbeddedMongoMojo {
                 for (File file : files) {
                     if (file.isFile()) {
                         try {
-                            scanner = new Scanner(file);
+                            if (scriptCharsetEncoding == null) {
+                                scanner = new Scanner(file);
+                            } else {
+                                // no need to check encoding, the constructor throws
+                                // an IllegalArgumentException if the charset cannot be determined
+                                // from the provided value.
+                                scanner = new Scanner(file, scriptCharsetEncoding);
+                            }
+
                             while (scanner.hasNextLine()) {
                                 instructions.append(scanner.nextLine()).append("\n");
                             }
                         } catch (FileNotFoundException e) {
                             throw new MojoExecutionException("Unable to find file with name '" + file.getName() + "'", e);
+                        } catch (IllegalArgumentException e) {
+                            throw new MojoExecutionException("Unable to determine charset encoding for provided charset '" + scriptCharsetEncoding + "'", e);
                         } finally {
                             if (scanner != null) {
                                 scanner.close();

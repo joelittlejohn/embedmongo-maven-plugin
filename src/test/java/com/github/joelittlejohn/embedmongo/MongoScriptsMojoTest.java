@@ -24,8 +24,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.UnknownHostException;
+
+import com.mongodb.DBCollection;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -54,7 +57,7 @@ public class MongoScriptsMojoTest {
     should_execute_instructions() throws MojoFailureException, MojoExecutionException, IOException {
         initFolder();
         try {
-            new MongoScriptsMojoForTest(rootFolder, PORT, "myDB").execute();
+            new MongoScriptsMojoForTest(rootFolder, PORT, "myDB", null).execute();
         } catch (Exception e) {
             e.printStackTrace();
             fail("Should not fail!");
@@ -68,7 +71,7 @@ public class MongoScriptsMojoTest {
         thrown.expect(MojoExecutionException.class);
         thrown.expectMessage("Database name is missing");
 
-        new MongoScriptsMojo(rootFolder, PORT, null).execute();
+        new MongoScriptsMojo(rootFolder, PORT, null, null).execute();
     }
 
     @Test public void
@@ -82,7 +85,18 @@ public class MongoScriptsMojoTest {
         thrown.expect(MojoExecutionException.class);
         thrown.expectMessage("Error while executing instructions from file '" + rootFolderWithError.listFiles()[0].getName());
 
-        new MongoScriptsMojoForTest(rootFolderWithError, PORT, "myDB", database).execute();
+        new MongoScriptsMojoForTest(rootFolderWithError, PORT, "myDB", database, null).execute();
+    }
+
+    @Test public void
+    should_not_accept_invalid_charset_encoding() throws IOException, MojoFailureException, MojoExecutionException {
+        initFolder();
+
+        String invalidScriptCharsetEncoding = "INVALID";
+        thrown.expect(MojoExecutionException.class);
+        thrown.expectMessage("Unable to determine charset encoding for provided charset '" + invalidScriptCharsetEncoding + "'");
+
+        new MongoScriptsMojoForTest(rootFolder, PORT, "myDB", invalidScriptCharsetEncoding).execute();
     }
 
     private void initFolder() throws IOException {
@@ -120,12 +134,12 @@ public class MongoScriptsMojoTest {
 
         private final DB database;
 
-        public MongoScriptsMojoForTest(File dataFolder, int port, String databaseName) throws UnknownHostException {
-            this(dataFolder, port, databaseName, new EmbedMongoDB("myDB"));
+        public MongoScriptsMojoForTest(File dataFolder, int port, String databaseName, String scriptCharsetEncoding) throws UnknownHostException {
+            this(dataFolder, port, databaseName, new EmbedMongoDB("myDB"), scriptCharsetEncoding);
         }
 
-        public MongoScriptsMojoForTest(File dataFolder, int port, String databaseName, DB database) {
-            super(dataFolder, port, databaseName);
+        public MongoScriptsMojoForTest(File dataFolder, int port, String databaseName, DB database, String scriptCharsetEncoding) {
+            super(dataFolder, port, databaseName, scriptCharsetEncoding);
             this.database = database;
         }
 
