@@ -64,6 +64,9 @@ Usage
         <scriptsDirectory>...</scriptsDirectory>
         <!-- a directory containing scripts to run -->
         
+        <scriptCharsetEncoding>UTF-8</scriptCharsetEncoding>
+        <!-- optional, valid charset encoding for loading the scripts. Uses the underlying charset encoding of the platform if not assigned -->
+        
         <databaseName>mydb</databaseName>
         <!-- the name of the database to run scripts against -->
         
@@ -132,3 +135,4 @@ Notes
 * If you need to use a proxy to download MongoDB then you can either use `-Dhttp.proxyHost` and `-Dhttp.proxyPort` as additional Maven arguments (this will affect the entire build) or [add proxy settings to your settings.xml](https://maven.apache.org/settings.html#Proxies).
 * If you're having trouble with Windows firewall rules, try setting the _bindIp_ config property to `127.0.0.1`.
 * If you'd like the start goal to start mongodb and wait, you can add `-Dembedmongo.wait` to your Maven command line arguments or `-Dembedmongo.import.wait` if you want the imports
+* If you are using a charset encoding to load scripts, refer to the [IANA Charset Registry](http://www.iana.org/assignments/character-sets/character-sets.xhtml).  Accepted charsets are found in the __Preferred MIME Name__ column.
