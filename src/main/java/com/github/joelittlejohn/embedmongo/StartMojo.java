@@ -126,6 +126,14 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
 
     @Parameter(property = "embedmongo.journal", defaultValue = "false")
     private boolean journal;
+    
+    /**
+     * The storageEngine which shall be used
+     * 
+     * @since 0.3.4
+     */
+    @Parameter(property = "embedmongo.storageEngine", defaultValue = "wiredTiger")
+    private String storageEngine;
 
     @Component
     protected Settings settings;
@@ -175,6 +183,7 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
                     .replication(new Storage(getDataDirectory(), null, 0))
                     .cmdOptions(new MongoCmdOptionsBuilder()
                     		.useNoJournal(!journal)
+                    		.useStorageEngine(storageEngine)
                     		.build())
                     .build();
 
