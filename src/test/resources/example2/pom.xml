@@ -37,11 +37,12 @@
                         </goals>
                         <configuration>
                             <port>37017</port>
-			                <version>2.1.1</version>
+			                <version>3.2.1</version>
                             <databaseDirectory>.</databaseDirectory>
                             <logging>file</logging>
             			    <bindIp>127.0.0.1</bindIp>
                             <authEnabled>false</authEnabled>
+                            <storageEngine>wiredTiger</storageEngine>
                         </configuration>
                     </execution>
                     <execution>
