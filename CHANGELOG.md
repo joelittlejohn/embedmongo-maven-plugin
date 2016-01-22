@@ -1,5 +1,9 @@
 # embedmongo-maven-plugin Changelog
 
+## 0.3.4
+* Add `scriptCharsetEncoding` option to mongo-scripts goal
+* Add `storageEngine` option to start goal
+
 ## 0.3.3
 * Fix use of Maven proxy settings on Java 8
 

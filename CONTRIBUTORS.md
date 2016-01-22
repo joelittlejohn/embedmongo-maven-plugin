@@ -14,4 +14,5 @@
 * Pierre-Jean Vardanega
 * Pablo
 * Ryan Tenney
-* Sergiu Indrie
+* Bryant Murchison
+* Matthias Kappeller
