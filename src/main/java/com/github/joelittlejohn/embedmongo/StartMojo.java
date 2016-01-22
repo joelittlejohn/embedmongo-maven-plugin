@@ -132,7 +132,7 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
      * 
      * @since 0.3.4
      */
-    @Parameter(property = "embedmongo.storageEngine", defaultValue = "wiredTiger")
+    @Parameter(property = "embedmongo.storageEngine", defaultValue = "mmapv1")
     private String storageEngine;
 
     @Component
