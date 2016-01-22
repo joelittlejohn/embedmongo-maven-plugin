@@ -47,6 +47,9 @@ Usage
         <downloadPath>http://internal-mongo-repo/</downloadPath>
         <!-- optional, default is http://fastdl.mongodb.org/ -->
         
+        <storageEngine>wiredTiger</storageEngine>
+        <!--optional, one of wiredTiger or mmapv1 (default is mmapv1) -->
+        
         <skip>false</skip>
         <!-- optional, skips this plugin entirely, use on the command line like -Dembedmongo.skip -->
         
