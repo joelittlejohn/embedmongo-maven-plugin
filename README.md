@@ -53,6 +53,9 @@ Usage
         <skip>false</skip>
         <!-- optional, skips this plugin entirely, use on the command line like -Dembedmongo.skip -->
         
+        <storageEngine>mmapv1</storageEngine>
+        <!-- optional, default is wiredTiger. See https://docs.mongodb.org/manual/core/storage-engines/ for details. -->
+        
       </configuration>
     </execution>
     <execution>
