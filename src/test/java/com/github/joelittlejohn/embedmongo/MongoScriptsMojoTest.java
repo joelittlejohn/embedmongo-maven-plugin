@@ -71,7 +71,7 @@ public class MongoScriptsMojoTest {
         thrown.expect(MojoExecutionException.class);
         thrown.expectMessage("Database name is missing");
 
-        new MongoScriptsMojo(rootFolder, PORT, null, null).execute();
+        new MongoScriptsMojo(rootFolder, PORT, null, null, false).execute();
     }
 
     @Test public void
@@ -97,6 +97,26 @@ public class MongoScriptsMojoTest {
         thrown.expectMessage("Unable to determine charset encoding for provided charset '" + invalidScriptCharsetEncoding + "'");
 
         new MongoScriptsMojoForTest(rootFolder, PORT, "myDB", invalidScriptCharsetEncoding).execute();
+    }
+
+    @Test public void
+    should_fail_on_missing_scripts_directory() throws MojoFailureException, MojoExecutionException {
+        boolean shouldFail = true;
+
+        File invalidDirectory = new File("./dummy/dir");
+        thrown.expect(MojoExecutionException.class);
+        thrown.expectMessage("Script directory: ./dummy/dir doesn't exist");
+
+        new MongoScriptsMojoForTest(invalidDirectory, PORT, "myDB", null, null, shouldFail).execute();
+    }
+
+    @Test public void
+    should_ignore_missing_scripts_directory() throws MojoFailureException, MojoExecutionException {
+        boolean shouldFail = false;
+
+        File invalidDirectory = new File("./dummy/dir");
+
+        new MongoScriptsMojoForTest(invalidDirectory, PORT, "myDB", null, null, shouldFail).execute();
     }
 
     private void initFolder() throws IOException {
@@ -139,7 +159,13 @@ public class MongoScriptsMojoTest {
         }
 
         public MongoScriptsMojoForTest(File dataFolder, int port, String databaseName, DB database, String scriptCharsetEncoding) {
-            super(dataFolder, port, databaseName, scriptCharsetEncoding);
+            super(dataFolder, port, databaseName, scriptCharsetEncoding, false);
+            this.database = database;
+        }
+
+        public MongoScriptsMojoForTest(File dataFolder, int port, String databaseName, DB database,
+                                       String scriptCharsetEncoding, boolean failOnMissingDirectory) {
+            super(dataFolder, port, databaseName, scriptCharsetEncoding, failOnMissingDirectory);
             this.database = database;
         }
 

@@ -63,14 +63,24 @@ public class MongoScriptsMojo extends AbstractEmbeddedMongoMojo {
     @Parameter(property = "databaseName", required = true)
     private String databaseName;
 
+    /**
+     * Determines whether build should fail when scrip directory is missing
+     */
+    @Parameter(property = "failOnMissingDirectory", required = true)
+    private boolean failOnMissingDirectory;
+
+
     public MongoScriptsMojo() {
     }
 
-    MongoScriptsMojo(File scriptsDirectory, int port, String databaseName, String scriptCharsetEncoding) {
+    MongoScriptsMojo(File scriptsDirectory, int port, String databaseName,
+                     String scriptCharsetEncoding, boolean failOnMissingDirectory) {
+
         super(port);
         this.scriptsDirectory = scriptsDirectory;
         this.databaseName = databaseName;
         this.scriptCharsetEncoding = scriptCharsetEncoding;
+        this.failOnMissingDirectory = failOnMissingDirectory;
     }
 
     @Override
@@ -127,6 +137,12 @@ public class MongoScriptsMojo extends AbstractEmbeddedMongoMojo {
                 }
             }
             getLog().info("Data initialized with success");
+        } else {
+            String message = "Script directory: " + scriptsDirectory + " doesn't exist";
+            getLog().warn(message);
+            if (failOnMissingDirectory) {
+                throw new MojoExecutionException(message);
+            }
         }
     }
 
