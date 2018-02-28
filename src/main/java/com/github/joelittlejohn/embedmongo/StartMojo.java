@@ -127,8 +127,9 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
 
     /**
      * The path for the UNIX socket
+     * @since 0.3.5
      */
-    @Parameter(property = "embedmongo.unixSocketPrefix", defaultValue = "/tmp")
+    @Parameter(property = "embedmongo.unixSocketPrefix")
     private String unixSocketPrefix;
 
     @Parameter(property = "embedmongo.journal", defaultValue = "false")
@@ -157,21 +158,14 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
         MongodExecutable executable;
         try {
 
-            final ICommandLinePostProcessor commandLinePostProcessor;
             final List<String> mongodArgs = this.createMongodArgsList(); 
-            if (!mongodArgs.isEmpty()) {
-                commandLinePostProcessor = new ICommandLinePostProcessor() {
-                    @Override
-                    public List<String> process(final Distribution distribution, final List<String> args) {
-                        for (String arg: mongodArgs) {
-                            args.add(arg);
-                        }
-                        return args;
-                    }
-                };
-            } else {
-                commandLinePostProcessor = new ICommandLinePostProcessor.Noop();
-            }
+            final ICommandLinePostProcessor commandLinePostProcessor = new ICommandLinePostProcessor() {
+                @Override
+                public List<String> process(final Distribution distribution, final List<String> args) {
+                    args.addAll(mongodArgs);
+                    return args;
+                }
+            };
 
             IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
                     .defaults(Command.MongoD)
