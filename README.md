@@ -46,6 +46,9 @@ Usage
         
         <downloadPath>http://internal-mongo-repo/</downloadPath>
         <!-- optional, default is http://fastdl.mongodb.org/ -->
+
+        <unixSocketPrefix>${user.home}/.embedmongo</unixSocketPrefix>
+        <!-- optional, default is /tmp -->
         
         <storageEngine>wiredTiger</storageEngine>
         <!--optional, one of wiredTiger or mmapv1 (default is mmapv1) -->

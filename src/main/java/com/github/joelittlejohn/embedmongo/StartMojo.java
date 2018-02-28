@@ -20,6 +20,7 @@ import static org.apache.commons.lang3.StringUtils.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -124,6 +125,13 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
     @Parameter(property = "embedmongo.authEnabled", defaultValue = "false")
     private boolean authEnabled;
 
+    /**
+     * The path for the UNIX socket
+     * @since 0.3.5
+     */
+    @Parameter(property = "embedmongo.unixSocketPrefix")
+    private String unixSocketPrefix;
+
     @Parameter(property = "embedmongo.journal", defaultValue = "false")
     private boolean journal;
     
@@ -150,19 +158,14 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
         MongodExecutable executable;
         try {
 
-            final ICommandLinePostProcessor commandLinePostProcessor;
-            if (authEnabled) {
-                commandLinePostProcessor = new ICommandLinePostProcessor() {
-                    @Override
-                    public List<String> process(final Distribution distribution, final List<String> args) {
-                        args.remove("--noauth");
-                        args.add("--auth");
-                        return args;
-                    }
-                };
-            } else {
-                commandLinePostProcessor = new ICommandLinePostProcessor.Noop();
-            }
+            final List<String> mongodArgs = this.createMongodArgsList(); 
+            final ICommandLinePostProcessor commandLinePostProcessor = new ICommandLinePostProcessor() {
+                @Override
+                public List<String> process(final Distribution distribution, final List<String> args) {
+                    args.addAll(mongodArgs);
+                    return args;
+                }
+            };
 
             IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
                     .defaults(Command.MongoD)
@@ -213,6 +216,19 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
         }
     }
 
+    private List<String> createMongodArgsList() {
+        List<String> mongodArgs = new ArrayList<String>();
+
+        if (this.authEnabled) {
+            mongodArgs.add("--auth");
+        }
+
+        if (this.unixSocketPrefix != null && !this.unixSocketPrefix.isEmpty()) {
+            mongodArgs.add("--unixSocketPrefix=" + this.unixSocketPrefix);
+        }
+
+        return mongodArgs;
+    }
 
     private ProcessOutput getOutputConfig() throws MojoFailureException {
 
