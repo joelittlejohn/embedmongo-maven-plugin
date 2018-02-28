@@ -185,9 +185,9 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
                     .version(getVersion()).net(new Net(bindIp, port, NetworkUtils.localhostIsIPv6()))
                     .replication(new Storage(getDataDirectory(), null, 0))
                     .cmdOptions(new MongoCmdOptionsBuilder()
-                    		.useNoJournal(!journal)
-                    		.useStorageEngine(storageEngine)
-                    		.build())
+                            .useNoJournal(!journal)
+                            .useStorageEngine(storageEngine)
+                            .build())
                     .build();
 
             executable = MongodStarter.getInstance(runtimeConfig).prepare(config);

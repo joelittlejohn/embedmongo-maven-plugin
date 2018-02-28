@@ -20,8 +20,8 @@
     <inceptionYear>2012</inceptionYear>
 
     <issueManagement>
-    	<system>GitHub</system>
-    	<url>https://github.com/joelittlejohn/embedmongo-maven-plugin/issues</url>
+        <system>GitHub</system>
+        <url>https://github.com/joelittlejohn/embedmongo-maven-plugin/issues</url>
     </issueManagement>
 
     <licenses>

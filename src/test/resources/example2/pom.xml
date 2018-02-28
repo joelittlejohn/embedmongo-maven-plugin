@@ -8,7 +8,7 @@
         <artifactId>embedmongo-maven-plugin-test-parent</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>
-					    
+
     <groupId>com.github.joelittlejohn.embedmongo</groupId>
     <artifactId>embedmongo-maven-plugin-test2</artifactId>
     <version>0.1.0-SNAPSHOT</version>
@@ -37,10 +37,10 @@
                         </goals>
                         <configuration>
                             <port>37017</port>
-			                <version>3.2.1</version>
+                            <version>3.2.1</version>
                             <databaseDirectory>.</databaseDirectory>
                             <logging>file</logging>
-            			    <bindIp>127.0.0.1</bindIp>
+                            <bindIp>127.0.0.1</bindIp>
                             <authEnabled>false</authEnabled>
                             <storageEngine>wiredTiger</storageEngine>
                         </configuration>
