@@ -18,7 +18,6 @@ package com.github.joelittlejohn.embedmongo;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
 import java.util.Scanner;
 
 import org.apache.maven.plugin.MojoExecutionException;

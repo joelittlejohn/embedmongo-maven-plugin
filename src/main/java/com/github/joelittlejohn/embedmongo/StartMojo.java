@@ -185,6 +185,7 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
                     .version(getVersion()).net(new Net(bindIp, port, NetworkUtils.localhostIsIPv6()))
                     .replication(new Storage(getDataDirectory(), null, 0))
                     .cmdOptions(new MongoCmdOptionsBuilder()
+                            .enableAuth(authEnabled)
                             .useNoJournal(!journal)
                             .useStorageEngine(storageEngine)
                             .build())
@@ -218,10 +219,6 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
 
     private List<String> createMongodArgsList() {
         List<String> mongodArgs = new ArrayList<String>();
-
-        if (this.authEnabled) {
-            mongodArgs.add("--auth");
-        }
 
         if (this.unixSocketPrefix != null && !this.unixSocketPrefix.isEmpty()) {
             mongodArgs.add("--unixSocketPrefix=" + this.unixSocketPrefix);

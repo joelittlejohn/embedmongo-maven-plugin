@@ -25,10 +25,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import com.mongodb.DBCollection;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
