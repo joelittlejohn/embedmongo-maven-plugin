@@ -1,5 +1,9 @@
 # embedmongo-maven-plugin Changelog
 
+## 0.3.5
+* Use the flapdoodle API for auth, instead of manually adding cmd args
+* Add option to specify unixPrefixSocket
+
 ## 0.3.4
 * Add `scriptCharsetEncoding` option to mongo-scripts goal
 * Add `storageEngine` option to start goal

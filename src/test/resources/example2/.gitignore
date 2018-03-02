@@ -1,0 +1,4 @@
+WiredTiger*
+*.wt
+*.lock
+*.bson
