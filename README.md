@@ -1,12 +1,10 @@
-embedmongo-maven-plugin [![Build Status](https://travis-ci.org/joelittlejohn/embedmongo-maven-plugin.png)](https://travis-ci.org/joelittlejohn/embedmongo-maven-plugin) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.joelittlejohn.embedmongo/embedmongo-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.joelittlejohn.embedmongo/embedmongo-maven-plugin)
-=======================
+# embedmongo-maven-plugin [![Build Status](https://travis-ci.org/joelittlejohn/embedmongo-maven-plugin.png)](https://travis-ci.org/joelittlejohn/embedmongo-maven-plugin) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.joelittlejohn.embedmongo/embedmongo-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.joelittlejohn.embedmongo/embedmongo-maven-plugin)
 
 Maven plugin wrapper for the [flapdoodle.de embedded MongoDB API](http://github.com/flapdoodle-oss/embedmongo.flapdoodle.de).
 
 This plugin lets you start and stop an instance of MongoDB during a Maven build, e.g. for integration testing. The Mongo instance isn't strictly embedded (it's not running within the JVM of your application), but it _is_ a managed instance that exists only for the lifetime of your build.
 
-Usage
------
+## Usage
 
 ```xml
 <plugin>
@@ -131,8 +129,7 @@ Usage
 </plugin>
 ```
 
-Notes
------
+## Notes
 
 * By default, the `start` goal is bound to `pre-integration-test`, the `stop` goal is bound to `post-integration-test`. You can of course bind to different phases if required.
 * If you omit/forget the `stop` goal, any Mongo process spawned by the `start` goal will be stopped when the JVM terminates.
@@ -142,3 +139,5 @@ Notes
 * If you're having trouble with Windows firewall rules, try setting the _bindIp_ config property to `127.0.0.1`.
 * If you'd like the start goal to start mongodb and wait, you can add `-Dembedmongo.wait` to your Maven command line arguments or `-Dembedmongo.import.wait` if you want the imports
 * If you are using a charset encoding to load scripts, refer to the [IANA Charset Registry](http://www.iana.org/assignments/character-sets/character-sets.xhtml).  Accepted charsets are found in the __Preferred MIME Name__ column.
+
+### Copyright © Joe Littlejohn 2012-2018
