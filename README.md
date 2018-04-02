@@ -140,4 +140,4 @@ This plugin lets you start and stop an instance of MongoDB during a Maven build,
 * If you'd like the start goal to start mongodb and wait, you can add `-Dembedmongo.wait` to your Maven command line arguments or `-Dembedmongo.import.wait` if you want the imports
 * If you are using a charset encoding to load scripts, refer to the [IANA Charset Registry](http://www.iana.org/assignments/character-sets/character-sets.xhtml).  Accepted charsets are found in the __Preferred MIME Name__ column.
 
-### Copyright © Joe Littlejohn 2012-2018
+### Copyright © 2012 Joe Littlejohn
