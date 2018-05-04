@@ -56,6 +56,11 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.0.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
                 <version>3.4</version>
                 <executions>
@@ -142,7 +147,7 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <version>1.50.2</version>
+            <version>1.50.5</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -168,6 +173,14 @@
             <artifactId>maven-plugin-testing-harness</artifactId>
             <version>3.3.0</version>
             <scope>test</scope>
+            <exclusions>
+                <!-- for an unknown reason, without this commons-io 2.2 overrides the
+                commons-io 2.4 required by de.flapdoodle.embed.mongo -->
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
