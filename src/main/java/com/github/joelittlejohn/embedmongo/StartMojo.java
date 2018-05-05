@@ -39,7 +39,7 @@ import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.ArtifactStoreBuilder;
+import de.flapdoodle.embed.mongo.config.ExtractedArtifactStoreBuilder;
 import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.MongoCmdOptionsBuilder;
@@ -143,7 +143,7 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
     @Parameter(property = "embedmongo.storageEngine", defaultValue = "mmapv1")
     private String storageEngine;
 
-    @Component
+    @Parameter( defaultValue = "${settings}", readonly = true )
     protected Settings settings;
 
     @Override
@@ -247,7 +247,7 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
 
     private IArtifactStore getArtifactStore() {
         IDownloadConfig downloadConfig = new DownloadConfigBuilder().defaultsForCommand(Command.MongoD).proxyFactory(getProxyFactory(settings)).downloadPath(downloadPath).build();
-        return new ArtifactStoreBuilder().defaults(Command.MongoD).download(downloadConfig).build();
+        return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD).download(downloadConfig).build();
     }
 
     public IProxyFactory getProxyFactory(Settings settings) {

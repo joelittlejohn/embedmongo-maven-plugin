@@ -72,7 +72,7 @@ public abstract class AbstractEmbeddedMongoMojo extends AbstractMojo {
     @Parameter(property = "embedmongo.wait", defaultValue = "false")
     private boolean wait;
 
-    @Component
+    @Parameter( defaultValue = "${project}", readonly = true )
     protected MavenProject project;
 
     public AbstractEmbeddedMongoMojo() {
