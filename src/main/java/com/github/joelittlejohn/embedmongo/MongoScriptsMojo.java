@@ -17,7 +17,6 @@ package com.github.joelittlejohn.embedmongo;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -134,12 +133,7 @@ public class MongoScriptsMojo extends AbstractEmbeddedMongoMojo {
             throw new MojoExecutionException("Database name is missing");
         }
 
-        MongoClient mongoClient;
-        try {
-            mongoClient = new MongoClient("localhost", getPort());
-        } catch (UnknownHostException e) {
-            throw new MojoExecutionException("Unable to connect to mongo instance", e);
-        }
+        MongoClient mongoClient = new MongoClient("localhost", getPort());
         getLog().info("Connected to MongoDB");
         return mongoClient.getDB(databaseName);
     }

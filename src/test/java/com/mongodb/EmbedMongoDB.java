@@ -15,6 +15,8 @@
  */
 package com.mongodb;
 
+import org.bson.BsonDocument;
+
 import java.net.UnknownHostException;
 import java.util.Set;
 
@@ -25,42 +27,18 @@ public class EmbedMongoDB extends DB {
     }
 
     public CommandResult notOkErrorResult(String message) {
-        try {
-            CommandResult commandResult = new CommandResult(new ServerAddress("localhost"));
-            commandResult.put("errmsg", message);
-            commandResult.put("ok", 0);
-            return commandResult;
-        } catch (UnknownHostException e) {
-            return null;
-        }
-    }
-
-    @Override
-    public CommandResult doEval(String code, Object... args) {
-        CommandResult commandResult;
-        try {
-            commandResult = new CommandResult(new ServerAddress("localhost"));
-            commandResult.put("ok", 1.0);
-            commandResult.put("retval", "null");
-        } catch (UnknownHostException e) {
-            return notOkErrorResult(e.getMessage());
-        }
+        CommandResult commandResult = new CommandResult(new BsonDocument(), new ServerAddress("localhost"));
+        commandResult.put("errmsg", message);
+        commandResult.put("ok", 0);
         return commandResult;
     }
 
     @Override
-    public void requestStart() {
-
-    }
-
-    @Override
-    public void requestDone() {
-
-    }
-
-    @Override
-    public void requestEnsureConnection() {
-
+    public CommandResult doEval(String code, Object... args) {
+        CommandResult commandResult = new CommandResult(new BsonDocument(), new ServerAddress("localhost"));
+        commandResult.put("ok", 1.0);
+        commandResult.put("retval", "null");
+        return commandResult;
     }
 
     @Override
@@ -71,15 +49,5 @@ public class EmbedMongoDB extends DB {
     @Override
     public Set<String> getCollectionNames() {
         return null;
-    }
-
-    @Override
-    CommandResult doAuthenticate(MongoCredential credentials) {
-        return null;
-    }
-
-    @Override
-    public void cleanCursors(boolean force) {
-
     }
 }

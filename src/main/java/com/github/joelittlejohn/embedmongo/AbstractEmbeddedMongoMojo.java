@@ -72,7 +72,7 @@ public abstract class AbstractEmbeddedMongoMojo extends AbstractMojo {
     @Parameter(property = "embedmongo.wait", defaultValue = "false")
     private boolean wait;
 
-    @Component
+    @Parameter( defaultValue = "${project}", readonly = true )
     protected MavenProject project;
 
     public AbstractEmbeddedMongoMojo() {
@@ -131,6 +131,8 @@ public abstract class AbstractEmbeddedMongoMojo extends AbstractMojo {
      * Saves port to the {@link MavenProject#getProperties()} (with the property
      * name {@code embedmongo.port}) to allow others (plugins, tests, etc) to
      * find the randomly allocated port.
+     *
+     * @param port the port.
      */
     protected void savePortToProjectProperties(int port) {
         project.getProperties().put("embedmongo.port", String.valueOf(port));

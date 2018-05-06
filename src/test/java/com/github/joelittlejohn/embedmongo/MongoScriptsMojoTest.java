@@ -17,7 +17,7 @@ package com.github.joelittlejohn.embedmongo;
 
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -32,8 +32,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.ArgumentMatchers;
+import org.mockito.junit.MockitoJUnitRunner;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.EmbedMongoDB;
@@ -52,7 +52,7 @@ public class MongoScriptsMojoTest {
     private File rootFolderWithError;
 
     @Test public void
-    should_execute_instructions() throws MojoFailureException, MojoExecutionException, IOException {
+    should_execute_instructions() throws IOException {
         initFolder();
         try {
             new MongoScriptsMojoForTest(rootFolder, PORT, "myDB", null).execute();
@@ -78,7 +78,7 @@ public class MongoScriptsMojoTest {
         initFolderWithError();
 
         CommandResult result = new EmbedMongoDB("myDB").notOkErrorResult("Error while executing instructions from file '" + rootFolderWithError.listFiles()[0].getName());
-        given(database.doEval(anyString(), Matchers.<Object>anyVararg())).willReturn(result);
+        given(database.doEval(anyString(), ArgumentMatchers.<Object>any())).willReturn(result);
 
         thrown.expect(MojoExecutionException.class);
         thrown.expectMessage("Error while executing instructions from file '" + rootFolderWithError.listFiles()[0].getName());
@@ -142,7 +142,7 @@ public class MongoScriptsMojoTest {
         }
 
         @Override
-        DB connectToMongoAndGetDatabase() throws MojoExecutionException {
+        DB connectToMongoAndGetDatabase() {
             return database;
         }
     }
