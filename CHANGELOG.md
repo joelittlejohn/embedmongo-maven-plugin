@@ -1,5 +1,9 @@
 # embedmongo-maven-plugin Changelog
 
+## 0.4.0
+* Update to de.flapdoodle.embed.mongo 2.0.3
+* Move to Java 8
+
 ## 0.3.5
 * Use the flapdoodle API for auth, instead of manually adding cmd args
 * Add option to specify unixPrefixSocket

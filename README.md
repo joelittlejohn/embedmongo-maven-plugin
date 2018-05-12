@@ -4,13 +4,18 @@ Maven plugin wrapper for the [flapdoodle.de embedded MongoDB API](http://github.
 
 This plugin lets you start and stop an instance of MongoDB during a Maven build, e.g. for integration testing. The Mongo instance isn't strictly embedded (it's not running within the JVM of your application), but it _is_ a managed instance that exists only for the lifetime of your build.
 
+## Versions
+
+* For Java 8: `<version>0.4.0</version>`
+* For Java 6: `<version>0.3.6</version>`
+
 ## Usage
 
 ```xml
 <plugin>
   <groupId>com.github.joelittlejohn.embedmongo</groupId>
   <artifactId>embedmongo-maven-plugin</artifactId>
-  <version>0.3.5</version>
+  <version>0.4.0</version>
   <executions>
     <execution>
       <id>start</id>
