@@ -220,7 +220,8 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
     private List<String> createMongodArgsList() {
         List<String> mongodArgs = new ArrayList<String>();
 
-        if (this.unixSocketPrefix != null && !this.unixSocketPrefix.isEmpty()) {
+        if (System.getProperty("os.name").toLowerCase().indexOf("win") == -1 
+            && this.unixSocketPrefix != null && !this.unixSocketPrefix.isEmpty()) {
             mongodArgs.add("--unixSocketPrefix=" + this.unixSocketPrefix);
         }
 
