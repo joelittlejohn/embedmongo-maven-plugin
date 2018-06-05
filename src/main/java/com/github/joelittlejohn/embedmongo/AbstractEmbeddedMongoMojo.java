@@ -96,23 +96,61 @@ public abstract class AbstractEmbeddedMongoMojo extends AbstractMojo {
     }
 
     protected IFeatureAwareVersion getVersion() {
-        String versionEnumName = this.version.toUpperCase().replaceAll("\\.", "_");
-
-        if (versionEnumName.charAt(0) != 'V') {
-            versionEnumName = "V" + versionEnumName;
-        }
+        String versionEnumName = getVersionEnumName(this.version);
 
         try {
             return Version.valueOf(versionEnumName);
         } catch (IllegalArgumentException e) {
-            getLog().warn("Unrecognised MongoDB version '" + this.version + "', this might be a new version that we don't yet know about. Attemping download anyway...");
-            return Versions.withFeatures(new IVersion() {
-                @Override
-                public String asInDownloadPath() {
-                    return version;
-                }
-            });
+            IFeatureAwareVersion nextLowestVersion = findNextLowestPointVersion();
+            if (nextLowestVersion != null) {
+                getLog().warn("Unrecognised MongoDB version '" + this.version + "', this might be a new version that we don't yet know about. Attemping download anyway, and using the config from version " + nextLowestVersion);
+                return nextLowestVersion;
+            } else {
+                getLog().warn("Unrecognised MongoDB version '" + this.version + "', this might be a new version that we don't yet know about. Attemping download anyway...");
+                return Versions.withFeatures(new IVersion() {
+                    @Override
+                    public String asInDownloadPath() {
+                        return version;
+                    }
+                });
+            }
         }
+    }
+
+    private String getVersionEnumName(String versionToGet) {
+        String versionEnumName = versionToGet.toUpperCase().replaceAll("\\.", "_");
+
+        if (versionEnumName.charAt(0) != 'V') {
+            versionEnumName = "V" + versionEnumName;
+        }
+        return versionEnumName;
+    }
+
+    private IFeatureAwareVersion findNextLowestPointVersion() {
+        if (this.version.lastIndexOf(".") >= this.version.length() - 1) {
+            return null;
+        }
+        String initialString = this.version.substring(0, this.version.lastIndexOf("."));
+        String pointVersionString = this.version.substring(this.version.lastIndexOf(".") + 1);
+        Integer pointVersion;
+        try {
+            pointVersion = Integer.valueOf(pointVersionString);
+            getLog().warn("pointVersion: " + pointVersion);
+        } catch (NumberFormatException numberFormatException) {
+            return null;
+        }
+        IFeatureAwareVersion nextLowestPointVersion = null;
+        while (pointVersion > 0) {
+            try {
+                pointVersion--;
+                String nextLowestVersionToTry = getVersionEnumName(initialString + "." + pointVersion.toString());
+                nextLowestPointVersion = Version.valueOf(nextLowestVersionToTry);
+                break;
+            } catch (IllegalArgumentException illegalArgumentException) {
+                // no-op
+            }
+        }
+        return nextLowestPointVersion;
     }
 
     protected Integer getPort() {
