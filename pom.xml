@@ -64,6 +64,7 @@
                                 <ignoredUnusedDeclaredDependency>org.apache.maven:maven-compat:jar:3.3.9</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.apache.maven:maven-artifact:jar:3.3.9</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.apache.maven:maven-artifact-manager:jar:2.2.1</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>commons-io:commons-io:jar:2.6</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                         </configuration>
                     </execution>
