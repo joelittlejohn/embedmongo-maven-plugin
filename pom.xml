@@ -64,6 +64,7 @@
                                 <ignoredUnusedDeclaredDependency>org.apache.maven:maven-compat:jar:3.3.9</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.apache.maven:maven-artifact:jar:3.3.9</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.apache.maven:maven-artifact-manager:jar:2.2.1</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>commons-io:commons-io:jar:2.6</ignoredUnusedDeclaredDependency>
                             </ignoredUnusedDeclaredDependencies>
                         </configuration>
                     </execution>
@@ -170,12 +171,12 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <version>2.0.3</version>
+            <version>2.1.1</version>
         </dependency>
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.process</artifactId>
-            <version>2.0.2</version>
+            <version>2.0.5</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -204,10 +205,25 @@
         </dependency>
 
         <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.maven.plugin-testing</groupId>
             <artifactId>maven-plugin-testing-harness</artifactId>
             <version>3.3.0</version>
             <scope>test</scope>
+            <exclusions>
+                <!-- for an unknown reason, without this commons-io 2.2 overrides the
+                commons-io 2.4 required by de.flapdoodle.embed.mongo -->
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
