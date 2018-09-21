@@ -1,5 +1,9 @@
 # embedmongo-maven-plugin Changelog
 
+## 0.4.1
+* Ignore unixSocketPrefix option when OS is Windows
+* Update to the latest versions of flapdoodle dependencies (should fix java.lang.NoClassDefFoundError: org/apache/commons/io/FileUtils)
+
 ## 0.4.0
 * Update to de.flapdoodle.embed.mongo 2.0.3
 * Move to Java 8

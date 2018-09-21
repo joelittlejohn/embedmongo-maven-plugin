@@ -6,7 +6,7 @@ This plugin lets you start and stop an instance of MongoDB during a Maven build,
 
 ## Versions
 
-* For Java 8/9: `<version>0.4.0</version>`
+* For Java 8 and later: `<version>0.4.1</version>`
 * For Java 6/7: `<version>0.3.5</version>`
 
 ## Usage
@@ -15,7 +15,7 @@ This plugin lets you start and stop an instance of MongoDB during a Maven build,
 <plugin>
   <groupId>com.github.joelittlejohn.embedmongo</groupId>
   <artifactId>embedmongo-maven-plugin</artifactId>
-  <version>0.4.0</version>
+  <version>0.4.1</version>
   <executions>
     <execution>
       <id>start</id>
