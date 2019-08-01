@@ -19,14 +19,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.distribution.Versions;
-import de.flapdoodle.embed.process.distribution.IVersion;
+import de.flapdoodle.embed.mongo.distribution.Feature;
+
+import java.util.stream.Stream;
 
 /**
  * Created by pablo on 28/03/15.
@@ -61,6 +62,14 @@ public abstract class AbstractEmbeddedMongoMojo extends AbstractMojo {
      */
     @Parameter(property = "embedmongo.version", defaultValue = "2.2.1")
     private String version;
+
+    /**
+     * The flapdoodle features required for download e.g. sync_delay,no_http_interface_arg
+     *
+     * @since 0.4.2
+     */
+    @Parameter(property = "embedmongo.features")
+    private String features;
 
     /**
      * Block immediately and wait until MongoDB is explicitly stopped (eg:
@@ -102,17 +111,24 @@ public abstract class AbstractEmbeddedMongoMojo extends AbstractMojo {
             versionEnumName = "V" + versionEnumName;
         }
 
+
+        Feature[] features = new Feature[0];
         try {
-            return Version.valueOf(versionEnumName);
+            features = Stream.of(this.features.split(",")).map(String::trim).map(String::toUpperCase).map(Feature::valueOf).toArray(Feature[]::new);
         } catch (IllegalArgumentException e) {
-            getLog().warn("Unrecognised MongoDB version '" + this.version + "', this might be a new version that we don't yet know about. Attemping download anyway...");
-            return Versions.withFeatures(new IVersion() {
-                @Override
-                public String asInDownloadPath() {
-                    return version;
-                }
-            });
+            getLog().warn("Unrecognised feature '" + this.features + ". Attempting download anyway...");
         }
+
+        try {
+            return Versions.withFeatures(Version.valueOf(versionEnumName), features);
+        } catch (IllegalArgumentException e) {
+            getLog().warn("Unrecognised MongoDB version '" + this.version + "', this might be a new version that we don't yet know about. Attempting download anyway...");
+            return Versions.withFeatures(() -> version, features);
+        }
+    }
+
+    public String getFeatures() {
+        return features;
     }
 
     protected Integer getPort() {
