@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.joelittlejohn.embedmongo</groupId>
+    <artifactId>embedmongo-maven-plugin-testfeatures</artifactId>
+    <version>0.4.2-SNAPSHOT</version>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.joelittlejohn.embedmongo</groupId>
+                <artifactId>embedmongo-maven-plugin</artifactId>
+                <configuration>
+                    <version>2.2.0</version>
+                    <features>only_with_ssl, ONLY_windows_2008_SERVER, NO_HTTP_INTERFACE_ARG</features>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start</id>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>mongo-scripts</id>
+                        <goals>
+                            <goal>mongo-scripts</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>mongo-import</id>
+                        <goals>
+                            <goal>mongo-import</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -32,6 +32,9 @@ This plugin lets you start and stop an instance of MongoDB during a Maven build,
         <version>2.0.4</version>
         <!-- optional, default 2.2.1 -->
         
+        <features>ONLY_WITH_SSL, ONLY_WINDOWS_2008_SERVER, NO_HTTP_INTERFACE_ARG</features>
+        <!-- optional, default is none. Enables flapdoodle.embed.mongo features, for example to build Windows download URLs since 3.6 -->
+        
         <databaseDirectory>/tmp/mongotest</databaseDirectory>
         <!-- optional, default is a new dir in java.io.tmpdir -->
         
