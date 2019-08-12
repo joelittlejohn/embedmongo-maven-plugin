@@ -113,10 +113,12 @@ public abstract class AbstractEmbeddedMongoMojo extends AbstractMojo {
 
 
         Feature[] features = new Feature[0];
-        try {
-            features = Stream.of(this.features.split(",")).map(String::trim).map(String::toUpperCase).map(Feature::valueOf).toArray(Feature[]::new);
-        } catch (IllegalArgumentException e) {
-            getLog().warn("Unrecognised feature '" + this.features + ". Attempting download anyway...");
+        if (this.features != null) {
+            try {
+                features = Stream.of(this.features.split(",")).map(String::trim).map(String::toUpperCase).map(Feature::valueOf).toArray(Feature[]::new);
+            } catch (IllegalArgumentException e) {
+                getLog().warn("Unrecognised feature '" + this.features + ". Attempting download anyway...");
+            }
         }
 
         try {
