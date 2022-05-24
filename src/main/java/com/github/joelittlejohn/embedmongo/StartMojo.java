@@ -24,9 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import de.flapdoodle.embed.mongo.config.Defaults;
+import de.flapdoodle.embed.mongo.config.MongoCmdOptions;
+import de.flapdoodle.embed.mongo.config.MongodConfig;
+import de.flapdoodle.embed.mongo.packageresolver.Command;
+import de.flapdoodle.embed.process.config.RuntimeConfig;
+import de.flapdoodle.embed.process.config.store.ImmutableDownloadConfig;
+import de.flapdoodle.embed.process.config.store.ProxyFactory;
+import de.flapdoodle.embed.process.config.store.SameDownloadPathForEveryDistribution;
+import de.flapdoodle.embed.process.runtime.CommandLinePostProcessor;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -35,27 +43,15 @@ import org.apache.maven.settings.Settings;
 import com.github.joelittlejohn.embedmongo.log.Loggers;
 import com.github.joelittlejohn.embedmongo.log.Loggers.LoggingStyle;
 
-import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.ExtractedArtifactStoreBuilder;
-import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
-import de.flapdoodle.embed.mongo.config.IMongodConfig;
-import de.flapdoodle.embed.mongo.config.MongoCmdOptionsBuilder;
-import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
-import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Storage;
-import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.config.store.HttpProxyFactory;
-import de.flapdoodle.embed.process.config.store.IDownloadConfig;
-import de.flapdoodle.embed.process.config.store.IProxyFactory;
-import de.flapdoodle.embed.process.config.store.NoProxyFactory;
 import de.flapdoodle.embed.process.distribution.Distribution;
 import de.flapdoodle.embed.process.exceptions.DistributionException;
-import de.flapdoodle.embed.process.runtime.ICommandLinePostProcessor;
 import de.flapdoodle.embed.process.store.IArtifactStore;
 
 /**
@@ -116,7 +112,7 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
      * 
      * @since 0.1.10
      */
-    @Parameter(property = "embedmongo.downloadPath", defaultValue = "http://fastdl.mongodb.org/")
+    @Parameter(property = "embedmongo.downloadPath", defaultValue = "http://fastdl.mongodb.org")
     private String downloadPath;
 
     /**
@@ -159,7 +155,7 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
         try {
 
             final List<String> mongodArgs = this.createMongodArgsList(); 
-            final ICommandLinePostProcessor commandLinePostProcessor = new ICommandLinePostProcessor() {
+            final CommandLinePostProcessor commandLinePostProcessor = new CommandLinePostProcessor() {
                 @Override
                 public List<String> process(final Distribution distribution, final List<String> args) {
                     args.addAll(mongodArgs);
@@ -167,8 +163,7 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
                 }
             };
 
-            IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
-                    .defaults(Command.MongoD)
+            RuntimeConfig runtimeConfig = Defaults.runtimeConfigFor(Command.MongoD)
                     .processOutput(getOutputConfig())
                     .artifactStore(getArtifactStore())
                     .commandLinePostProcessor(commandLinePostProcessor)
@@ -181,21 +176,19 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
             }
             savePortToProjectProperties(port);
 
-            IMongodConfig config = new MongodConfigBuilder()
+            MongodConfig config = MongodConfig.builder()
                     .version(getVersion()).net(new Net(bindIp, port, NetworkUtils.localhostIsIPv6()))
                     .replication(new Storage(getDataDirectory(), null, 0))
-                    .cmdOptions(new MongoCmdOptionsBuilder()
-                            .enableAuth(authEnabled)
+                    .cmdOptions(MongoCmdOptions.builder()
+                            .auth(authEnabled)
                             .useNoJournal(!journal)
-                            .useStorageEngine(storageEngine)
+                            .storageEngine(storageEngine)
                             .build())
                     .build();
 
             executable = MongodStarter.getInstance(runtimeConfig).prepare(config);
         } catch (DistributionException e) {
             throw new MojoExecutionException("Failed to download MongoDB distribution: " + e.withDistribution(), e);
-        } catch (IOException e) {
-            throw new MojoExecutionException("Unable to Config MongoDB: ", e);
         }
 
         try {
@@ -247,17 +240,24 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
     }
 
     private IArtifactStore getArtifactStore() {
-        IDownloadConfig downloadConfig = new DownloadConfigBuilder().defaultsForCommand(Command.MongoD).proxyFactory(getProxyFactory(settings)).downloadPath(downloadPath).build();
-        return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD).download(downloadConfig).build();
+        ImmutableDownloadConfig.Builder downloadConfigBuilder =
+                Defaults.downloadConfigFor(Command.MongoD);
+        ImmutableDownloadConfig downloadConfig = downloadConfigBuilder
+                .proxyFactory(getProxyFactory(settings))
+                .downloadPath(new SameDownloadPathForEveryDistribution(downloadPath))
+                .build();
+
+        return Defaults.extractedArtifactStoreFor(Command.MongoD)
+                        .withDownloadConfig(downloadConfig);
     }
 
-    public IProxyFactory getProxyFactory(Settings settings) {
+    public ProxyFactory getProxyFactory(Settings settings) {
         URI downloadUri = URI.create(downloadPath);
         final String downloadHost = downloadUri.getHost();
         final String downloadProto = downloadUri.getScheme();
 
         if (settings.getProxies() != null) {
-            for (org.apache.maven.settings.Proxy proxy : (List<org.apache.maven.settings.Proxy>) settings.getProxies()) {
+            for (org.apache.maven.settings.Proxy proxy : settings.getProxies()) {
                 if (proxy.isActive() 
                         && equalsIgnoreCase(proxy.getProtocol(), downloadProto) 
                         && !contains(proxy.getNonProxyHosts(), downloadHost)) {
@@ -265,8 +265,8 @@ public class StartMojo extends AbstractEmbeddedMongoMojo {
                 }
             }
         }
-        
-        return new NoProxyFactory();
+
+        return () -> null;
     }
 
     private String getDataDirectory() {

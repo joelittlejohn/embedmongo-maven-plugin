@@ -18,8 +18,7 @@ package com.github.joelittlejohn.embedmongo;
 import de.flapdoodle.embed.mongo.MongoImportExecutable;
 import de.flapdoodle.embed.mongo.MongoImportProcess;
 import de.flapdoodle.embed.mongo.MongoImportStarter;
-import de.flapdoodle.embed.mongo.config.IMongoImportConfig;
-import de.flapdoodle.embed.mongo.config.MongoImportConfigBuilder;
+import de.flapdoodle.embed.mongo.config.MongoImportConfig;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.Timeout;
 import org.apache.commons.lang3.StringUtils;
@@ -77,17 +76,16 @@ public class MongoImportMojo extends AbstractEmbeddedMongoMojo {
                 database = defaultImportDatabase;
             }
 
-            IMongoImportConfig mongoImportConfig = new MongoImportConfigBuilder()
+            MongoImportConfig mongoImportConfig = MongoImportConfig.builder()
                     .version(getVersion())
                     .net(new Net(getPort(), NetworkUtils.localhostIsIPv6()))
-                    .db(database)
-                    .collection(importData.getCollection())
-                    .upsert(importData.getUpsertOnImport())
-                    .dropCollection(importData.getDropOnImport())
-                    .importFile(importData.getFile())
-                    .jsonArray(true)
-                    .timeout(new Timeout(importData.getTimeout()))
-                    .build();
+                    .build().withDatabaseName(database)
+                    .withCollectionName(importData.getCollection())
+                    .withIsUpsertDocuments(importData.getUpsertOnImport())
+                    .withIsDropCollection(importData.getDropOnImport())
+                    .withImportFile(importData.getFile())
+                    .withIsJsonArray(true)
+                    .withTimeout(new Timeout(importData.getTimeout()));
 
             MongoImportExecutable mongoImport = MongoImportStarter.getDefaultInstance().prepare(mongoImportConfig);
 
