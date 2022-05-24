@@ -15,9 +15,10 @@
  */
 package com.github.joelittlejohn.embedmongo.log;
 
-import de.flapdoodle.embed.process.io.IStreamProcessor;
 
-public class NoopStreamProcessor implements IStreamProcessor {
+import de.flapdoodle.embed.process.io.StreamProcessor;
+
+public class NoopStreamProcessor implements StreamProcessor {
 
     @Override
     public void process(String block) {

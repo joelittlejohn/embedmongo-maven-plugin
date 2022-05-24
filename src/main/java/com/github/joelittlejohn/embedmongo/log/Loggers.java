@@ -15,8 +15,8 @@
  */
 package com.github.joelittlejohn.embedmongo.log;
 
-import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.config.MongodProcessOutputConfig;
+import de.flapdoodle.embed.mongo.packageresolver.Command;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.io.NamedOutputStreamProcessor;
 

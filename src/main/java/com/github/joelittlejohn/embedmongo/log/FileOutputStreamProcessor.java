@@ -19,9 +19,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import de.flapdoodle.embed.process.io.IStreamProcessor;
+import de.flapdoodle.embed.process.io.StreamProcessor;
 
-public class FileOutputStreamProcessor implements IStreamProcessor {
+public class FileOutputStreamProcessor implements StreamProcessor {
 
     private static OutputStreamWriter stream;
 
